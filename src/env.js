@@ -16,6 +16,11 @@ export const env = createEnv({
     BETTER_AUTH_GITHUB_CLIENT_SECRET: z.string(),
     DATABASE_URL: z.string().url(),
     DIRECT_URL: z.string().url(),
+    IMAGEKIT_URL_ENDPOINT: z.string().url(),
+    IMAGEKIT_PUBLIC_KEY: z.string(),
+    IMAGEKIT_PRIVATE_KEY: z.string(),
+    INTERNAL_API_SECRET: z.string(),
+    KIE_AI_API_KEY: z.string(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -43,6 +48,11 @@ export const env = createEnv({
     DATABASE_URL: process.env.DATABASE_URL,
     DIRECT_URL: process.env.DIRECT_URL,
     NODE_ENV: process.env.NODE_ENV,
+    IMAGEKIT_URL_ENDPOINT: process.env.IMAGEKIT_URL_ENDPOINT,
+    IMAGEKIT_PUBLIC_KEY: process.env.IMAGEKIT_PUBLIC_KEY,
+    IMAGEKIT_PRIVATE_KEY: process.env.IMAGEKIT_PRIVATE_KEY,
+    INTERNAL_API_SECRET: process.env.INTERNAL_API_SECRET,
+    KIE_AI_API_KEY: process.env.KIE_AI_API_KEY,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

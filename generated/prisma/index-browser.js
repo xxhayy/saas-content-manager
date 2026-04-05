@@ -186,6 +186,20 @@ exports.Prisma.ProjectScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.AssetScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  blueprint: 'blueprint',
+  category: 'category',
+  originalUrl: 'originalUrl',
+  cleanUrl: 'cleanUrl',
+  status: 'status',
+  retryCount: 'retryCount',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -200,7 +214,17 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.AssetCategory = exports.$Enums.AssetCategory = {
+  FURNITURE: 'FURNITURE',
+  COMMERCE_PRODUCT: 'COMMERCE_PRODUCT',
+  AVATAR: 'AVATAR'
+};
 
+exports.AssetsStatus = exports.$Enums.AssetsStatus = {
+  PROCESSING: 'PROCESSING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED'
+};
 
 exports.Prisma.ModelName = {
   Post: 'Post',
@@ -208,7 +232,8 @@ exports.Prisma.ModelName = {
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification',
-  Project: 'Project'
+  Project: 'Project',
+  Asset: 'Asset'
 };
 
 /**
