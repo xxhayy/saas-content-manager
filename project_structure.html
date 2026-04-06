@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AirOne Studio - Project Structure Review</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #030712;
+            --card-bg: #111827;
+            --border: #1f2937;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.2);
+            --tree-bg: #0f172a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.description {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid var(--border);
+            margin: 3rem 0;
+        }
+
+        section {
+            margin-bottom: 3rem;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        h2::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--accent);
+        }
+
+        .tree-container {
+            background: var(--tree-bg);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .tree-container pre {
+            color: #e2e8f0;
+            line-height: 1.4;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0.5rem;
+        }
+
+        li {
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        strong {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .category-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 2rem;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .category-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 30px -10px var(--accent-glow);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 640px) {
+            h1 { font-size: 2rem; }
+            body { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AirOne Studio</h1>
+            <p class="description">
+                A comprehensive architectural overview of the <strong>aironeaistudio2</strong> codebase, outlining the purpose and positioning of every core component.
+            </p>
+        </header>
+
+        <section>
+            <h2>🌳 Project Tree</h2>
+            <div class="tree-container">
+<pre>
+aironeaistudio2/
+├── prisma/
+│   ├── migrations/
+│   └── schema.prisma
+├── public/
+│   └── favicon.ico
+├── src/
+│   ├── app/
+│   │   ├── (auth)/
+│   │   │   ├── auth/[path]/page.tsx
+│   │   │   └── layout.tsx
+│   │   ├── (dashboard)/
+│   │   │   ├── dashboard/
+│   │   │   │   ├── assets/page.tsx
+│   │   │   │   └── page.tsx
+│   │   │   └── layout.tsx
+│   │   ├── api/
+│   │   │   ├── assets/
+│   │   │   │   ├── process/route.ts
+│   │   │   │   ├── recent/route.ts
+│   │   │   │   └── upload/route.ts
+│   │   │   ├── auth/[...all]/route.ts
+│   │   │   └── upload-auth/route.ts
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   ├── components/
+│   │   ├── assets/
+│   │   │   ├── asset-card.tsx
+│   │   │   └── asset-upload-zone.tsx
+│   │   ├── ui/ (shadcn/ui components)
+│   │   ├── app-sidebar.tsx
+│   │   ├── providers.tsx
+│   │   └── theme-provider.tsx
+│   ├── hooks/
+│   │   └── use-mobile.ts
+│   ├── lib/
+│   │   ├── auth-client.ts
+│   │   ├── auth.ts
+│   │   └── utils.ts
+│   ├── server/
+│   │   ├── better-auth/
+│   │   ├── db.ts
+│   │   ├── imagekit.ts
+│   │   └── kie-ai.ts
+│   └── styles/
+│       └── globals.css
+├── .env
+├── next.config.js
+├── package.json
+├── tailwind.config.ts
+└── tsconfig.json
+</pre>
+            </div>
+        </section>
+
+        <hr>
+
+        <section class="category-card">
+            <h2>📁 Root Directory</h2>
+            <ul>
+                <li><strong>`.env` / `.env.example`</strong>: Environment variable configurations (API keys, database URLs).</li>
+                <li><strong>`next.config.js`</strong>: Next.js configuration (images, experimental features).</li>
+                <li><strong>`package.json`</strong>: Project dependencies, scripts, and metadata.</li>
+                <li><strong>`prisma/`</strong>: Database management folder.</li>
+                <li><strong>`public/`</strong>: Static assets like favicons and public images.</li>
+                <li><strong>`src/`</strong>: The main source code directory.</li>
+                <li><strong>`tailwind.config.ts`</strong>: Tailwind CSS theme and plugin configuration.</li>
+                <li><strong>`tsconfig.json`</strong>: TypeScript compiler options and path mappings.</li>
+                <li><strong>`eslint.config.js`</strong>: Linting rules for code quality.</li>
+                <li><strong>`postcss.config.js`</strong>: CSS processing configuration.</li>
+            </ul>
+        </section>
+
+        <section class="category-card" style="margin-top: 2rem;">
+            <h2>📁 prisma/</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">The data layer of the application.</p>
+            <ul>
+                <li><strong>`schema.prisma`</strong>: The single source of truth for the database schema (Models: User, Session, Account, Asset).</li>
+                <li><strong>`migrations/`</strong>: Automatically generated SQL files that track database schema changes.</li>
+            </ul>
+        </section>
+
+        <section class="category-card" style="margin-top: 2rem;">
+            <h2>📁 src/app/</h2>
+            <p style="color: var(--text-secondary);">The core of the Next.js App Router architecture.</p>
+            
+            <h3>Routing Groups</h3>
+            <ul>
+                <li><strong>`(auth)/`</strong>: Layout and dynamic routing for Better Auth authentication.</li>
+                <li><strong>`(dashboard)/`</strong>: Protected routes including main overview and asset gallery.</li>
+                <li><strong>`layout.tsx`</strong>: Root HTML structure and global providers.</li>
+                <li><strong>`page.tsx`</strong>: Application landing page.</li>
+            </ul>
+
+            <h3>API Layer</h3>
+            <ul>
+                <li><strong>`api/auth/`</strong>: Server-side handler for Better Auth.</li>
+                <li><strong>`api/upload-auth/`</strong>: Secure ImageKit authentication endpoint.</li>
+                <li><strong>`api/assets/`</strong>: Sequential background workers and upload handlers.</li>
+            </ul>
+        </section>
+
+        <section class="category-card" style="margin-top: 2rem;">
+            <h2>📁 src/components/</h2>
+            <ul>
+                <li><strong>`assets/`</strong>: UI for Asset cards and the specialized upload zone.</li>
+                <li><strong>`ui/`</strong>: Core design system built with shadcn/ui.</li>
+                <li><strong>`app-sidebar.tsx`</strong>: Dynamic navigation sidebar.</li>
+                <li><strong>`providers.tsx`</strong>: Client-side context container.</li>
+            </ul>
+        </section>
+
+        <section class="category-card" style="margin-top: 2rem;">
+            <h2>📁 src/server/</h2>
+            <ul>
+                <li><strong>`db.ts`</strong>: Singleton Prisma initialization.</li>
+                <li><strong>`imagekit.ts`</strong>: ImageKit storage service integration.</li>
+                <li><strong>`kie-ai.ts`</strong>: AI processing service (Nano-Banana-2) with polling logic.</li>
+                <li><strong>`better-auth/`</strong>: Auth plugin and config directory.</li>
+            </ul>
+        </section>
+
+        <section class="category-card" style="margin-top: 2rem; margin-bottom: 5rem;">
+            <h2>📁 Utility Folders</h2>
+            <h3>src/lib/</h3>
+            <ul>
+                <li><strong>`auth.ts`</strong>: Better Auth server instance.</li>
+                <li><strong>`auth-client.ts`</strong>: Better Auth client utilities.</li>
+                <li><strong>`utils.ts`</strong>: Tailwind class merging helper.</li>
+            </ul>
+
+            <h3>src/hooks/ & styles/</h3>
+            <ul>
+                <li><strong>`use-mobile.ts`</strong>: Responsive viewport detection.</li>
+                <li><strong>`globals.css`</strong>: Global CSS variables and Tailwind layers.</li>
+            </ul>
+        </section>
+    </div>
+</body>
+</html>
