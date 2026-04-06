@@ -40,6 +40,7 @@ model User {
   accounts      Account[]
   posts         Post[]
   projects      Project[]
+  assets        Asset[]
 
   @@unique([email])
   @@map("user")
@@ -105,4 +106,35 @@ model Project {
   updatedAt  DateTime @updatedAt
 
   @@map("project")
+}
+
+enum AssetsStatus {
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum AssetCategory {
+  FURNITURE
+  COMMERCE_PRODUCT
+  AVATAR
+}
+
+model Asset {
+  id          String        @id @default(cuid())
+  name        String?
+  blueprint   String?
+  category    AssetCategory
+  originalUrl String
+  cleanUrl    String?
+  status      AssetsStatus  @default(PROCESSING)
+  retryCount  Int           @default(0)
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@map("asset")
 }

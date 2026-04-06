@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Assets Page — Integration Steps</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      --bg: #0d0d0d;
+      --surface: #161616;
+      --surface2: #1e1e1e;
+      --border: #2a2a2a;
+      --text: #e8e8e8;
+      --muted: #888;
+      --accent: #6366f1;
+      --accent-dim: #6366f115;
+      --green: #22c55e;
+      --yellow: #f59e0b;
+      --red: #ef4444;
+      --blue: #3b82f6;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 13.5px;
+      line-height: 1.7;
+      padding: 48px 64px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* ---- HEADER ---- */
+    .doc-header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 32px;
+      margin-bottom: 40px;
+    }
+    .doc-header h1 {
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #e8e8e8 40%, #6366f1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+    .doc-header p {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .badge {
+      display: inline-block;
+      background: var(--accent-dim);
+      border: 1px solid #6366f140;
+      color: #a5b4fc;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 999px;
+      margin-right: 6px;
+      margin-top: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    /* ---- DIVIDER ---- */
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 36px 0;
+    }
+
+    /* ---- PHASE HEADING ---- */
+    .phase {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      margin-top: 40px;
+    }
+    .phase-number {
+      background: var(--accent);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      letter-spacing: 0.02em;
+    }
+    .phase h2 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .phase-desc {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    /* ---- STEP ---- */
+    .step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 14px;
+    }
+    .step-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+    .step-number {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      min-width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .step h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      padding-top: 4px;
+    }
+    .step p { color: #b0b0b0; font-size: 13px; margin-bottom: 10px; }
+    .step p:last-child { margin-bottom: 0; }
+
+    /* ---- ORDERED / UNORDERED LISTS ---- */
+    ol, ul {
+      padding-left: 20px;
+      color: #b0b0b0;
+      font-size: 13px;
+    }
+    li { margin-bottom: 5px; }
+    li strong { color: var(--text); }
+
+    /* ---- CODE ---- */
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: #a5b4fc;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    pre {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+      overflow-x: auto;
+      margin: 12px 0;
+    }
+    pre code {
+      background: transparent;
+      border: none;
+      color: #c7d2fe;
+      font-size: 12px;
+      padding: 0;
+    }
+
+    /* ---- ALERTS ---- */
+    .alert {
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin: 14px 0;
+      border-left: 3px solid;
+      font-size: 12.5px;
+    }
+    .alert-label {
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .alert p { color: inherit; margin: 0; font-size: 12.5px; }
+    .alert-tip    { background: #14280f; border-color: var(--green); color: #86efac; }
+    .alert-tip .alert-label { color: var(--green); }
+    .alert-note   { background: #0f1e2f; border-color: var(--blue); color: #93c5fd; }
+    .alert-note .alert-label { color: var(--blue); }
+    .alert-important { background: #1e1208; border-color: var(--yellow); color: #fcd34d; }
+    .alert-important .alert-label { color: var(--yellow); }
+
+    /* ---- TABLE ---- */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      margin: 16px 0;
+    }
+    th {
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 8px 14px;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    td {
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      color: #c0c0c0;
+      vertical-align: top;
+    }
+    tr:nth-child(even) td { background: #111; }
+    td:first-child { color: var(--text); font-weight: 600; }
+    td code { font-size: 11px; }
+
+    /* ---- SUMMARY TABLE (numbered) ---- */
+    .summary-table td:nth-child(1) { color: var(--muted); font-weight: 400; text-align: center; width: 32px; }
+    .summary-table td:nth-child(2) code { color: #86efac; }
+
+    /* ---- PHASE DIVIDER LINE ---- */
+    .phase-rule { border-top: 1px dashed var(--border); margin: 10px 0 0 0; }
+
+    /* ---- FOOTER ---- */
+    .doc-footer {
+      margin-top: 56px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    /* ---- PRINT STYLES ---- */
+    @media print {
+      body { background: #fff; color: #111; padding: 24px 32px; }
+      :root {
+        --bg: #fff; --surface: #f5f5f5; --surface2: #ebebeb;
+        --border: #ddd; --text: #111; --muted: #666;
+        --accent: #4f46e5; --accent-dim: #4f46e510;
+      }
+      .doc-header h1 { -webkit-text-fill-color: #111; background: none; }
+      pre, code { background: #f0f0f0; color: #333; }
+      .alert-tip { background: #f0fff4; color: #166534; }
+      .alert-note { background: #eff6ff; color: #1e40af; }
+      .alert-important { background: #fffbeb; color: #92400e; }
+      .step { break-inside: avoid; }
+      .phase { break-before: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="doc-header">
+    <h1>Assets Page — Integration Steps</h1>
+    <p>A beginner-friendly, step-by-step guide to building the Assets feature from scratch.</p>
+    <div>
+      <span class="badge">20 Steps</span>
+      <span class="badge">6 Phases</span>
+      <span class="badge">14 Files</span>
+      <span class="badge">AirOne Studio</span>
+    </div>
+  </div>
+
+  <!-- ===================== PHASE 1 ===================== -->
+  <div class="phase">
+    <div class="phase-number">1</div>
+    <div>
+      <div class="phase h2" style="margin:0; display:block;">
+        <h2>External Setup <span style="font-weight:400;color:var(--muted);font-size:13px;">(You Do This Manually)</span></h2>
+      </div>
+      <div class="phase-desc">One-time tasks done outside the code editor</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <div class="step-number">01</div>
+      <h3>Create an ImageKit Account</h3>
+    </div>
+    <p>ImageKit is where we'll store all uploaded images (originals + AI-processed versions).</p>
+    <ol>
+      <li>Go to <strong>imagekit.io</strong> and sign up (free tier is fine)</li>
+      <li>Once logged in, go to <strong>Settings → Developer Options → API Keys</strong></li>
+      <li>You'll see 3 values: <strong>URL Endpoint</strong>, <strong>Public Key</strong>, <strong>Private Key</strong></li>
+      <li>Copy all 3 — you'll need them in Step 3</li>
+    </ol>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <div class="step-number">02</div>
+      <h3>Get Your kie.ai API Key</h3>
+    </div>
+    <p>You already have this! It's the <code>KIE_API_KEY</code> from your earlier project. Make sure you know where it is.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <div class="step-number">03</div>
+      <h3>Add Keys to Your <code>.env</code> File</h3>
+    </div>
+    <p>Open your <code>.env</code> file in the project root and add these lines at the bottom:</p>
+    <pre><code># ImageKit
+NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY=paste_your_public_key_here
+IMAGEKIT_PRIVATE_KEY=paste_your_private_key_here
+NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/your_id
+
+# kie.ai
+KIE_AI_API_KEY=paste_your_kie_api_key_here
+
+# Internal Secret (type any random long string, like a password)
+INTERNAL_API_SECRET=make_up_a_random_string_here_abc123xyz</code></pre>
+    <div class="alert alert-tip">
+      <div class="alert-label">💡 Tip</div>
+      <p>The <code>INTERNAL_API_SECRET</code> is a password you make up yourself to protect your internal API route. Just type any random string — it doesn't come from any service.</p>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- ===================== PHASE 2 ===================== -->
+  <div class="phase">
+    <div class="phase-number">2</div>
+    <div>
+      <h2>Database <span style="font-weight:400;color:var(--muted);font-size:13px;">(Adding the Asset Table)</span></h2>
+      <div class="phase-desc">Tell the database about the new Asset structure</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <div class="step-number">04</div>
+      <h3>Update the Prisma Schema</h3>
+    </div>
+    <p>Edit <code>prisma/schema.prisma</code> to add the following:</p>
+    <ul>
+      <li>An <strong>AssetStatus</strong> enum: <code>PROCESSING</code>, <code>COMPLETED</code>, <code>FAILED</code></li>
+      <li>An <strong>AssetCategory</strong> enum: <code>FURNITURE</code>, <code>COMMERCE_PRODUCT</code>, <code>AVATAR</code></li>
+      <li>The full <strong>Asset model</strong> with all fields (name, blueprint, urls, status, retryCount…)</li>
+      <li>A new <code>assets Asset[]</code> relation on the existing <strong>User model</strong></li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <div class="step-number">05</div>
+      <h3>Push Schema to Database</h3>
+    </div>
+    <p>Run these two commands to sync the new schema to your Supabase database:</p>
+    <pre><code>npx prisma db push
+npx prisma generate</code></pre>
+    <div class="alert alert-note">
+      <div class="alert-label">ℹ️ Note</div>
+      <p><code>db push</code> creates the new <code>asset</code> table in Supabase PostgreSQL. <code>generate</code> updates the TypeScript types so your code knows about the new model.</p>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- ===================== PHASE 3 ===================== -->
+  <div class="phase">
+    <div class="phase-number">3</div>
+    <div>
+      <h2>Server-Side Services <span style="font-weight:400;color:var(--muted);font-size:13px;">(The Backend Brain)</span></h2>
+      <div class="phase-desc">Create helper modules for ImageKit and kie.ai</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <div class="step-number">06</div>
+      <h3>Create the ImageKit Service</h3>
+    </div>
+    <p>Create <code>src/server/imagekit.ts</code> that:</p>
+    <ul>
+      <li>Configures the ImageKit SDK with your keys from <code>.env</code></li>
+      <li>Exports a helper function to upload images to ImageKit folders</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <div class="step-number">07</div>
+      <h3>Create the kie.ai Service</h3>
+    </div>
+    <p>Create <code>src/server/kie-ai.ts</code> that contains:</p>
+    <ul>
+      <li><strong>submitTask()</strong> — sends an image + prompt to <code>https://api.kie.ai/api/v1/jobs/createTask</code></li>
+      <li><strong>pollTask()</strong> — checks <code>https://api.kie.ai/api/v1/jobs/recordInfo</code> every 4 seconds until done</li>
+      <li><strong>Category prompt templates</strong> — different prompts for Furniture, Commerce Product, and Avatar</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <div class="step-number">08</div>
+      <h3>Update Environment Validation</h3>
+    </div>
+    <p>Edit <code>src/env.js</code> to add validation rules for the new environment variables. This makes the app warn you at startup if any API keys are missing.</p>
+  </div>
+
+  <hr />
+
+  <!-- ===================== PHASE 4 ===================== -->
+  <div class="phase">
+    <div class="phase-number">4</div>
+    <div>
+      <h2>API Routes <span style="font-weight:400;color:var(--muted);font-size:13px;">(The Endpoints)</span></h2>
+      <div class="phase-desc">5 API routes that power the entire backend pipeline</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <div class="step-number">09</div>
+      <h3>Create the ImageKit Auth Route</h3>
+    </div>
+    <p>Create <code>src/app/api/imagekit-auth/route.ts</code>:</p>
+    <ul>
+      <li>Returns auth tokens so the <strong>browser</strong> can upload images directly to ImageKit</li>
+      <li>Required because ImageKit needs a server-signed auth for secure uploads</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <div class="step-number">10</div>
+      <h3>Create the Upload Route</h3>
+    </div>
+    <p>Create <code>src/app/api/assets/upload/route.ts</code>:</p>
+    <ul>
+      <li>Receives a list of ImageKit URLs + the selected category</li>
+      <li>Creates one <code>Asset</code> database record per image (<code>status: PROCESSING</code>)</li>
+      <li>Fires off the processing chain in the background</li>
+      <li>Returns asset IDs immediately — the user doesn't wait</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <div class="step-number">11</div>
+      <h3>Create the Process-Next Route</h3>
+    </div>
+    <p>Create <code>src/app/api/assets/process-next/route.ts</code> — the heart of the system:</p>
+    <ul>
+      <li>Finds the oldest <code>PROCESSING</code> asset</li>
+      <li>Sends it to kie.ai → waits for result → uploads clean image to ImageKit → updates DB</li>
+      <li>If it fails, <strong>retries up to 3 times</strong> before marking as <code>FAILED</code></li>
+      <li>If there are more assets to process, <strong>calls itself again</strong> automatically</li>
+      <li>Secured with <code>INTERNAL_API_SECRET</code> so only our server can trigger it</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <div class="step-number">12</div>
+      <h3>Create the Assets List Route</h3>
+    </div>
+    <p>Create <code>src/app/api/assets/route.ts</code>:</p>
+    <ul>
+      <li>Returns all assets for the logged-in user</li>
+      <li>Supports filtering by category</li>
+      <li>Used by the frontend gallery to display and poll for updates</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <div class="step-number">13</div>
+      <h3>Create the Recent Assets Route</h3>
+    </div>
+    <p>Create <code>src/app/api/assets/recent/route.ts</code>:</p>
+    <ul>
+      <li>Returns the 5 most recent assets</li>
+      <li>Used by the dashboard home page for notifications</li>
+    </ul>
+  </div>
+
+  <hr />
+
+  <!-- ===================== PHASE 5 ===================== -->
+  <div class="phase">
+    <div class="phase-number">5</div>
+    <div>
+      <h2>Frontend <span style="font-weight:400;color:var(--muted);font-size:13px;">(What the User Sees)</span></h2>
+      <div class="phase-desc">5 components and pages that make up the Assets UI</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <div class="step-number">14</div>
+      <h3>Build the Asset Card Component</h3>
+    </div>
+    <p>Create <code>src/components/assets/asset-card.tsx</code> — a card with 3 visual states:</p>
+    <ul>
+      <li>⏳ <strong>Processing</strong> — spinner + "Processing..." text overlay</li>
+      <li>✅ <strong>Completed</strong> — clean white-background image + auto-generated name + category badge</li>
+      <li>❌ <strong>Failed</strong> — error message + "Retry" button</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <div class="step-number">15</div>
+      <h3>Build the Upload Zone Component</h3>
+    </div>
+    <p>Create <code>src/components/assets/asset-upload-zone.tsx</code> — a popup/dialog with:</p>
+    <ul>
+      <li>Category selector (Furniture / Commerce Product / Avatar) — <strong>required before upload</strong></li>
+      <li>Drag-and-drop area for images (max 10 images)</li>
+      <li>Preview thumbnails of selected files</li>
+      <li>"Upload" button that triggers the entire pipeline</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <div class="step-number">16</div>
+      <h3>Build the Assets Page</h3>
+    </div>
+    <p>Create <code>src/app/(dashboard)/assets/page.tsx</code> — the main page at <code>/dashboard/assets</code>:</p>
+    <ul>
+      <li><strong>3 category tabs</strong>: Furniture | Commerce Product | Avatar</li>
+      <li><strong>Grid of asset cards</strong> filtered by the selected tab</li>
+      <li><strong>"Upload Assets"</strong> button in the header</li>
+      <li><strong>Auto-polls</strong> the server every 5 seconds while assets are processing</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <div class="step-number">17</div>
+      <h3>Update the Dashboard Page</h3>
+    </div>
+    <p>Edit <code>src/app/(dashboard)/dashboard/page.tsx</code>:</p>
+    <ul>
+      <li>Add a <strong>"Recent Assets"</strong> section showing the 5 most recent assets</li>
+      <li>Show each asset with its current status badge</li>
+      <li>Acts as a notification center for completed processing</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <div class="step-number">18</div>
+      <h3>Link Assets in the Sidebar</h3>
+    </div>
+    <p>Confirm the <strong>"Assets"</strong> link in the sidebar navigation (<code>app-sidebar.tsx</code>) points to <code>/dashboard/assets</code>.</p>
+  </div>
+
+  <hr />
+
+  <!-- ===================== PHASE 6 ===================== -->
+  <div class="phase">
+    <div class="phase-number">6</div>
+    <div>
+      <h2>Test Everything</h2>
+      <div class="phase-desc">Verify the feature works end-to-end</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <div class="step-number">19</div>
+      <h3>Test the Happy Path</h3>
+    </div>
+    <ol>
+      <li>Navigate to <code>/dashboard/assets</code></li>
+      <li>Click "Upload Assets" and select <strong>Furniture</strong> as the category</li>
+      <li>Drop in 2–3 test images → click Upload</li>
+      <li>See "Submitted" confirmation — cards show spinners</li>
+      <li><strong>Navigate away</strong> to <code>/dashboard</code></li>
+      <li>Wait ~60 seconds, return to <code>/dashboard/assets</code></li>
+      <li>✅ All images show clean white backgrounds + auto-generated names</li>
+      <li>✅ Dashboard shows recent asset notifications</li>
+    </ol>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <div class="step-number">20</div>
+      <h3>Test Edge Cases</h3>
+    </div>
+    <ul>
+      <li>Upload more than 10 images → should be blocked with an error</li>
+      <li>Upload a non-image file (e.g. a PDF) → should be rejected</li>
+      <li>Check "Commerce Product" tab is empty when you only uploaded to "Furniture"</li>
+      <li>Verify that an asset stuck as <code>FAILED</code> shows a Retry button</li>
+    </ul>
+  </div>
+
+  <hr />
+
+  <!-- ===================== SUMMARY TABLE ===================== -->
+  <div class="phase">
+    <div class="phase-number" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted);">✦</div>
+    <div>
+      <h2>Summary — All Files Created or Modified</h2>
+    </div>
+  </div>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>File</th>
+        <th>What It Does</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><code>.env</code></td><td>Add 5 new environment variables</td></tr>
+      <tr><td>2</td><td><code>prisma/schema.prisma</code></td><td>Add Asset model + enums</td></tr>
+      <tr><td>3</td><td><code>src/server/imagekit.ts</code></td><td>ImageKit upload helper</td></tr>
+      <tr><td>4</td><td><code>src/server/kie-ai.ts</code></td><td>kie.ai submit + poll helpers + prompts</td></tr>
+      <tr><td>5</td><td><code>src/env.js</code></td><td>Validate new env vars at startup</td></tr>
+      <tr><td>6</td><td><code>src/app/api/imagekit-auth/route.ts</code></td><td>Client-side upload auth tokens</td></tr>
+      <tr><td>7</td><td><code>src/app/api/assets/upload/route.ts</code></td><td>Batch upload endpoint</td></tr>
+      <tr><td>8</td><td><code>src/app/api/assets/process-next/route.ts</code></td><td>Self-chaining AI processor with retry</td></tr>
+      <tr><td>9</td><td><code>src/app/api/assets/route.ts</code></td><td>List assets by category</td></tr>
+      <tr><td>10</td><td><code>src/app/api/assets/recent/route.ts</code></td><td>Recent assets for dashboard</td></tr>
+      <tr><td>11</td><td><code>src/components/assets/asset-card.tsx</code></td><td>Asset display card (3 states)</td></tr>
+      <tr><td>12</td><td><code>src/components/assets/asset-upload-zone.tsx</code></td><td>Upload dialog with category selector</td></tr>
+      <tr><td>13</td><td><code>src/app/(dashboard)/assets/page.tsx</code></td><td>Assets gallery page with tabs</td></tr>
+      <tr><td>14</td><td><code>src/app/(dashboard)/dashboard/page.tsx</code></td><td>Updated dashboard with Recent Assets</td></tr>
+    </tbody>
+  </table>
+
+  <div class="alert alert-important" style="margin-top:24px;">
+    <div class="alert-label">⚠️ Important — Build Order Matters</div>
+    <p>Follow the phases in order. Each phase depends on the one before it:<br/>
+    <strong>Phase 2 (Database)</strong> → <strong>Phase 3 (Services)</strong> → <strong>Phase 4 (API Routes)</strong> → <strong>Phase 5 (Frontend)</strong></p>
+  </div>
+
+  <div class="doc-footer">
+    <span>AirOne Studio — Assets Integration Guide</span>
+    <span>20 Steps · 6 Phases · 14 Files</span>
+  </div>
+
+</body>
+</html>

@@ -11,8 +11,8 @@ generator client {
 // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
@@ -40,6 +40,7 @@ model User {
   accounts      Account[]
   posts         Post[]
   projects      Project[]
+  assets        Asset[]
 
   @@unique([email])
   @@map("user")
@@ -57,8 +58,8 @@ model Session {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
-  @@map("session")
   @@index([userId])
+  @@map("session")
 }
 
 model Account {
@@ -77,8 +78,8 @@ model Account {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
-  @@map("account")
   @@index([userId])
+  @@map("account")
 }
 
 model Verification {
@@ -89,21 +90,51 @@ model Verification {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now()) @updatedAt
 
-  @@map("verification")
   @@index([identifier])
+  @@map("verification")
 }
 
-model Project{ 
-  id  String @id @default(cuid())
-  name String?
-  imageUrl String
+model Project {
+  id         String   @id @default(cuid())
+  name       String?
+  imageUrl   String
   imageKitId String
-  filePath String 
-  userId String 
-  user User @relation(fields  : [userId], references: [id], onDelete: Cascade) 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  filePath   String
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@map("project")
-  
+}
+
+enum AssetsStatus {
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum AssetCategory {
+  FURNITURE
+  COMMERCE_PRODUCT
+  AVATAR
+}
+
+model Asset {
+  id          String        @id @default(cuid())
+  name        String?
+  blueprint   String?
+  category    AssetCategory
+  originalUrl String
+  cleanUrl    String?
+  status      AssetsStatus  @default(PROCESSING)
+  retryCount  Int           @default(0)
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@map("asset")
 }

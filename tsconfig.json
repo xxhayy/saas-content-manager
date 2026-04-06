@@ -23,6 +23,7 @@
     "jsx": "preserve",
     "plugins": [{ "name": "next" }],
     "incremental": true,
+    "ignoreDeprecations": "6.0",
 
     /* Path Aliases */
     "baseUrl": ".",
@@ -38,5 +39,5 @@
     "**/*.js",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "generated"]
+  "exclude": ["node_modules", "generated", "figma-layout", "test-kie.js"]
 }

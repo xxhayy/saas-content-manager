@@ -43,6 +43,42 @@ export type Verification = $Result.DefaultSelection<Prisma.$VerificationPayload>
  * 
  */
 export type Project = $Result.DefaultSelection<Prisma.$ProjectPayload>
+/**
+ * Model Asset
+ * 
+ */
+export type Asset = $Result.DefaultSelection<Prisma.$AssetPayload>
+
+/**
+ * Enums
+ */
+export namespace $Enums {
+  export const AssetsStatus: {
+  PROCESSING: 'PROCESSING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED'
+};
+
+export type AssetsStatus = (typeof AssetsStatus)[keyof typeof AssetsStatus]
+
+
+export const AssetCategory: {
+  FURNITURE: 'FURNITURE',
+  COMMERCE_PRODUCT: 'COMMERCE_PRODUCT',
+  AVATAR: 'AVATAR'
+};
+
+export type AssetCategory = (typeof AssetCategory)[keyof typeof AssetCategory]
+
+}
+
+export type AssetsStatus = $Enums.AssetsStatus
+
+export const AssetsStatus: typeof $Enums.AssetsStatus
+
+export type AssetCategory = $Enums.AssetCategory
+
+export const AssetCategory: typeof $Enums.AssetCategory
 
 /**
  * ##  Prisma Client ʲˢ
@@ -221,6 +257,16 @@ export class PrismaClient<
     * ```
     */
   get project(): Prisma.ProjectDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.asset`: Exposes CRUD operations for the **Asset** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Assets
+    * const assets = await prisma.asset.findMany()
+    * ```
+    */
+  get asset(): Prisma.AssetDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -667,7 +713,8 @@ export namespace Prisma {
     Session: 'Session',
     Account: 'Account',
     Verification: 'Verification',
-    Project: 'Project'
+    Project: 'Project',
+    Asset: 'Asset'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -686,7 +733,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "post" | "user" | "session" | "account" | "verification" | "project"
+      modelProps: "post" | "user" | "session" | "account" | "verification" | "project" | "asset"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1134,6 +1181,80 @@ export namespace Prisma {
           }
         }
       }
+      Asset: {
+        payload: Prisma.$AssetPayload<ExtArgs>
+        fields: Prisma.AssetFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AssetFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AssetFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetPayload>
+          }
+          findFirst: {
+            args: Prisma.AssetFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AssetFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetPayload>
+          }
+          findMany: {
+            args: Prisma.AssetFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetPayload>[]
+          }
+          create: {
+            args: Prisma.AssetCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetPayload>
+          }
+          createMany: {
+            args: Prisma.AssetCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AssetCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetPayload>[]
+          }
+          delete: {
+            args: Prisma.AssetDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetPayload>
+          }
+          update: {
+            args: Prisma.AssetUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetPayload>
+          }
+          deleteMany: {
+            args: Prisma.AssetDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AssetUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AssetUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetPayload>[]
+          }
+          upsert: {
+            args: Prisma.AssetUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetPayload>
+          }
+          aggregate: {
+            args: Prisma.AssetAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAsset>
+          }
+          groupBy: {
+            args: Prisma.AssetGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AssetGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AssetCountArgs<ExtArgs>
+            result: $Utils.Optional<AssetCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1236,6 +1357,7 @@ export namespace Prisma {
     account?: AccountOmit
     verification?: VerificationOmit
     project?: ProjectOmit
+    asset?: AssetOmit
   }
 
   /* Types for Logging */
@@ -1320,6 +1442,7 @@ export namespace Prisma {
     accounts: number
     posts: number
     projects: number
+    assets: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1327,6 +1450,7 @@ export namespace Prisma {
     accounts?: boolean | UserCountOutputTypeCountAccountsArgs
     posts?: boolean | UserCountOutputTypeCountPostsArgs
     projects?: boolean | UserCountOutputTypeCountProjectsArgs
+    assets?: boolean | UserCountOutputTypeCountAssetsArgs
   }
 
   // Custom InputTypes
@@ -1366,6 +1490,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ProjectWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountAssetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AssetWhereInput
   }
 
 
@@ -2615,6 +2746,7 @@ export namespace Prisma {
     accounts?: boolean | User$accountsArgs<ExtArgs>
     posts?: boolean | User$postsArgs<ExtArgs>
     projects?: boolean | User$projectsArgs<ExtArgs>
+    assets?: boolean | User$assetsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2654,6 +2786,7 @@ export namespace Prisma {
     accounts?: boolean | User$accountsArgs<ExtArgs>
     posts?: boolean | User$postsArgs<ExtArgs>
     projects?: boolean | User$projectsArgs<ExtArgs>
+    assets?: boolean | User$assetsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2666,6 +2799,7 @@ export namespace Prisma {
       accounts: Prisma.$AccountPayload<ExtArgs>[]
       posts: Prisma.$PostPayload<ExtArgs>[]
       projects: Prisma.$ProjectPayload<ExtArgs>[]
+      assets: Prisma.$AssetPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3073,6 +3207,7 @@ export namespace Prisma {
     accounts<T extends User$accountsArgs<ExtArgs> = {}>(args?: Subset<T, User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     posts<T extends User$postsArgs<ExtArgs> = {}>(args?: Subset<T, User$postsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     projects<T extends User$projectsArgs<ExtArgs> = {}>(args?: Subset<T, User$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    assets<T extends User$assetsArgs<ExtArgs> = {}>(args?: Subset<T, User$assetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3590,6 +3725,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ProjectScalarFieldEnum | ProjectScalarFieldEnum[]
+  }
+
+  /**
+   * User.assets
+   */
+  export type User$assetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Asset
+     */
+    omit?: AssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetInclude<ExtArgs> | null
+    where?: AssetWhereInput
+    orderBy?: AssetOrderByWithRelationInput | AssetOrderByWithRelationInput[]
+    cursor?: AssetWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AssetScalarFieldEnum | AssetScalarFieldEnum[]
   }
 
   /**
@@ -7976,6 +8135,1176 @@ export namespace Prisma {
 
 
   /**
+   * Model Asset
+   */
+
+  export type AggregateAsset = {
+    _count: AssetCountAggregateOutputType | null
+    _avg: AssetAvgAggregateOutputType | null
+    _sum: AssetSumAggregateOutputType | null
+    _min: AssetMinAggregateOutputType | null
+    _max: AssetMaxAggregateOutputType | null
+  }
+
+  export type AssetAvgAggregateOutputType = {
+    retryCount: number | null
+  }
+
+  export type AssetSumAggregateOutputType = {
+    retryCount: number | null
+  }
+
+  export type AssetMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    blueprint: string | null
+    category: $Enums.AssetCategory | null
+    originalUrl: string | null
+    cleanUrl: string | null
+    status: $Enums.AssetsStatus | null
+    retryCount: number | null
+    userId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AssetMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    blueprint: string | null
+    category: $Enums.AssetCategory | null
+    originalUrl: string | null
+    cleanUrl: string | null
+    status: $Enums.AssetsStatus | null
+    retryCount: number | null
+    userId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AssetCountAggregateOutputType = {
+    id: number
+    name: number
+    blueprint: number
+    category: number
+    originalUrl: number
+    cleanUrl: number
+    status: number
+    retryCount: number
+    userId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type AssetAvgAggregateInputType = {
+    retryCount?: true
+  }
+
+  export type AssetSumAggregateInputType = {
+    retryCount?: true
+  }
+
+  export type AssetMinAggregateInputType = {
+    id?: true
+    name?: true
+    blueprint?: true
+    category?: true
+    originalUrl?: true
+    cleanUrl?: true
+    status?: true
+    retryCount?: true
+    userId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AssetMaxAggregateInputType = {
+    id?: true
+    name?: true
+    blueprint?: true
+    category?: true
+    originalUrl?: true
+    cleanUrl?: true
+    status?: true
+    retryCount?: true
+    userId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AssetCountAggregateInputType = {
+    id?: true
+    name?: true
+    blueprint?: true
+    category?: true
+    originalUrl?: true
+    cleanUrl?: true
+    status?: true
+    retryCount?: true
+    userId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type AssetAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Asset to aggregate.
+     */
+    where?: AssetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Assets to fetch.
+     */
+    orderBy?: AssetOrderByWithRelationInput | AssetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AssetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Assets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Assets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Assets
+    **/
+    _count?: true | AssetCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AssetAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AssetSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AssetMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AssetMaxAggregateInputType
+  }
+
+  export type GetAssetAggregateType<T extends AssetAggregateArgs> = {
+        [P in keyof T & keyof AggregateAsset]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAsset[P]>
+      : GetScalarType<T[P], AggregateAsset[P]>
+  }
+
+
+
+
+  export type AssetGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AssetWhereInput
+    orderBy?: AssetOrderByWithAggregationInput | AssetOrderByWithAggregationInput[]
+    by: AssetScalarFieldEnum[] | AssetScalarFieldEnum
+    having?: AssetScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AssetCountAggregateInputType | true
+    _avg?: AssetAvgAggregateInputType
+    _sum?: AssetSumAggregateInputType
+    _min?: AssetMinAggregateInputType
+    _max?: AssetMaxAggregateInputType
+  }
+
+  export type AssetGroupByOutputType = {
+    id: string
+    name: string | null
+    blueprint: string | null
+    category: $Enums.AssetCategory
+    originalUrl: string
+    cleanUrl: string | null
+    status: $Enums.AssetsStatus
+    retryCount: number
+    userId: string
+    createdAt: Date
+    updatedAt: Date
+    _count: AssetCountAggregateOutputType | null
+    _avg: AssetAvgAggregateOutputType | null
+    _sum: AssetSumAggregateOutputType | null
+    _min: AssetMinAggregateOutputType | null
+    _max: AssetMaxAggregateOutputType | null
+  }
+
+  type GetAssetGroupByPayload<T extends AssetGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AssetGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AssetGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AssetGroupByOutputType[P]>
+            : GetScalarType<T[P], AssetGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AssetSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    blueprint?: boolean
+    category?: boolean
+    originalUrl?: boolean
+    cleanUrl?: boolean
+    status?: boolean
+    retryCount?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["asset"]>
+
+  export type AssetSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    blueprint?: boolean
+    category?: boolean
+    originalUrl?: boolean
+    cleanUrl?: boolean
+    status?: boolean
+    retryCount?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["asset"]>
+
+  export type AssetSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    blueprint?: boolean
+    category?: boolean
+    originalUrl?: boolean
+    cleanUrl?: boolean
+    status?: boolean
+    retryCount?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["asset"]>
+
+  export type AssetSelectScalar = {
+    id?: boolean
+    name?: boolean
+    blueprint?: boolean
+    category?: boolean
+    originalUrl?: boolean
+    cleanUrl?: boolean
+    status?: boolean
+    retryCount?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type AssetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "blueprint" | "category" | "originalUrl" | "cleanUrl" | "status" | "retryCount" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["asset"]>
+  export type AssetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type AssetIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type AssetIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $AssetPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Asset"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string | null
+      blueprint: string | null
+      category: $Enums.AssetCategory
+      originalUrl: string
+      cleanUrl: string | null
+      status: $Enums.AssetsStatus
+      retryCount: number
+      userId: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["asset"]>
+    composites: {}
+  }
+
+  type AssetGetPayload<S extends boolean | null | undefined | AssetDefaultArgs> = $Result.GetResult<Prisma.$AssetPayload, S>
+
+  type AssetCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AssetFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AssetCountAggregateInputType | true
+    }
+
+  export interface AssetDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Asset'], meta: { name: 'Asset' } }
+    /**
+     * Find zero or one Asset that matches the filter.
+     * @param {AssetFindUniqueArgs} args - Arguments to find a Asset
+     * @example
+     * // Get one Asset
+     * const asset = await prisma.asset.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AssetFindUniqueArgs>(args: SelectSubset<T, AssetFindUniqueArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Asset that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AssetFindUniqueOrThrowArgs} args - Arguments to find a Asset
+     * @example
+     * // Get one Asset
+     * const asset = await prisma.asset.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AssetFindUniqueOrThrowArgs>(args: SelectSubset<T, AssetFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Asset that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssetFindFirstArgs} args - Arguments to find a Asset
+     * @example
+     * // Get one Asset
+     * const asset = await prisma.asset.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AssetFindFirstArgs>(args?: SelectSubset<T, AssetFindFirstArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Asset that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssetFindFirstOrThrowArgs} args - Arguments to find a Asset
+     * @example
+     * // Get one Asset
+     * const asset = await prisma.asset.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AssetFindFirstOrThrowArgs>(args?: SelectSubset<T, AssetFindFirstOrThrowArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Assets that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssetFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Assets
+     * const assets = await prisma.asset.findMany()
+     * 
+     * // Get first 10 Assets
+     * const assets = await prisma.asset.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const assetWithIdOnly = await prisma.asset.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AssetFindManyArgs>(args?: SelectSubset<T, AssetFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Asset.
+     * @param {AssetCreateArgs} args - Arguments to create a Asset.
+     * @example
+     * // Create one Asset
+     * const Asset = await prisma.asset.create({
+     *   data: {
+     *     // ... data to create a Asset
+     *   }
+     * })
+     * 
+     */
+    create<T extends AssetCreateArgs>(args: SelectSubset<T, AssetCreateArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Assets.
+     * @param {AssetCreateManyArgs} args - Arguments to create many Assets.
+     * @example
+     * // Create many Assets
+     * const asset = await prisma.asset.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AssetCreateManyArgs>(args?: SelectSubset<T, AssetCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Assets and returns the data saved in the database.
+     * @param {AssetCreateManyAndReturnArgs} args - Arguments to create many Assets.
+     * @example
+     * // Create many Assets
+     * const asset = await prisma.asset.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Assets and only return the `id`
+     * const assetWithIdOnly = await prisma.asset.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AssetCreateManyAndReturnArgs>(args?: SelectSubset<T, AssetCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Asset.
+     * @param {AssetDeleteArgs} args - Arguments to delete one Asset.
+     * @example
+     * // Delete one Asset
+     * const Asset = await prisma.asset.delete({
+     *   where: {
+     *     // ... filter to delete one Asset
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AssetDeleteArgs>(args: SelectSubset<T, AssetDeleteArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Asset.
+     * @param {AssetUpdateArgs} args - Arguments to update one Asset.
+     * @example
+     * // Update one Asset
+     * const asset = await prisma.asset.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AssetUpdateArgs>(args: SelectSubset<T, AssetUpdateArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Assets.
+     * @param {AssetDeleteManyArgs} args - Arguments to filter Assets to delete.
+     * @example
+     * // Delete a few Assets
+     * const { count } = await prisma.asset.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AssetDeleteManyArgs>(args?: SelectSubset<T, AssetDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Assets.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssetUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Assets
+     * const asset = await prisma.asset.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AssetUpdateManyArgs>(args: SelectSubset<T, AssetUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Assets and returns the data updated in the database.
+     * @param {AssetUpdateManyAndReturnArgs} args - Arguments to update many Assets.
+     * @example
+     * // Update many Assets
+     * const asset = await prisma.asset.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Assets and only return the `id`
+     * const assetWithIdOnly = await prisma.asset.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AssetUpdateManyAndReturnArgs>(args: SelectSubset<T, AssetUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Asset.
+     * @param {AssetUpsertArgs} args - Arguments to update or create a Asset.
+     * @example
+     * // Update or create a Asset
+     * const asset = await prisma.asset.upsert({
+     *   create: {
+     *     // ... data to create a Asset
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Asset we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AssetUpsertArgs>(args: SelectSubset<T, AssetUpsertArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Assets.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssetCountArgs} args - Arguments to filter Assets to count.
+     * @example
+     * // Count the number of Assets
+     * const count = await prisma.asset.count({
+     *   where: {
+     *     // ... the filter for the Assets we want to count
+     *   }
+     * })
+    **/
+    count<T extends AssetCountArgs>(
+      args?: Subset<T, AssetCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AssetCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Asset.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssetAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AssetAggregateArgs>(args: Subset<T, AssetAggregateArgs>): Prisma.PrismaPromise<GetAssetAggregateType<T>>
+
+    /**
+     * Group by Asset.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssetGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AssetGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AssetGroupByArgs['orderBy'] }
+        : { orderBy?: AssetGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AssetGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAssetGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Asset model
+   */
+  readonly fields: AssetFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Asset.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AssetClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Asset model
+   */
+  interface AssetFieldRefs {
+    readonly id: FieldRef<"Asset", 'String'>
+    readonly name: FieldRef<"Asset", 'String'>
+    readonly blueprint: FieldRef<"Asset", 'String'>
+    readonly category: FieldRef<"Asset", 'AssetCategory'>
+    readonly originalUrl: FieldRef<"Asset", 'String'>
+    readonly cleanUrl: FieldRef<"Asset", 'String'>
+    readonly status: FieldRef<"Asset", 'AssetsStatus'>
+    readonly retryCount: FieldRef<"Asset", 'Int'>
+    readonly userId: FieldRef<"Asset", 'String'>
+    readonly createdAt: FieldRef<"Asset", 'DateTime'>
+    readonly updatedAt: FieldRef<"Asset", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Asset findUnique
+   */
+  export type AssetFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Asset
+     */
+    omit?: AssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetInclude<ExtArgs> | null
+    /**
+     * Filter, which Asset to fetch.
+     */
+    where: AssetWhereUniqueInput
+  }
+
+  /**
+   * Asset findUniqueOrThrow
+   */
+  export type AssetFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Asset
+     */
+    omit?: AssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetInclude<ExtArgs> | null
+    /**
+     * Filter, which Asset to fetch.
+     */
+    where: AssetWhereUniqueInput
+  }
+
+  /**
+   * Asset findFirst
+   */
+  export type AssetFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Asset
+     */
+    omit?: AssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetInclude<ExtArgs> | null
+    /**
+     * Filter, which Asset to fetch.
+     */
+    where?: AssetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Assets to fetch.
+     */
+    orderBy?: AssetOrderByWithRelationInput | AssetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Assets.
+     */
+    cursor?: AssetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Assets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Assets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Assets.
+     */
+    distinct?: AssetScalarFieldEnum | AssetScalarFieldEnum[]
+  }
+
+  /**
+   * Asset findFirstOrThrow
+   */
+  export type AssetFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Asset
+     */
+    omit?: AssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetInclude<ExtArgs> | null
+    /**
+     * Filter, which Asset to fetch.
+     */
+    where?: AssetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Assets to fetch.
+     */
+    orderBy?: AssetOrderByWithRelationInput | AssetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Assets.
+     */
+    cursor?: AssetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Assets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Assets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Assets.
+     */
+    distinct?: AssetScalarFieldEnum | AssetScalarFieldEnum[]
+  }
+
+  /**
+   * Asset findMany
+   */
+  export type AssetFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Asset
+     */
+    omit?: AssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetInclude<ExtArgs> | null
+    /**
+     * Filter, which Assets to fetch.
+     */
+    where?: AssetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Assets to fetch.
+     */
+    orderBy?: AssetOrderByWithRelationInput | AssetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Assets.
+     */
+    cursor?: AssetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Assets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Assets.
+     */
+    skip?: number
+    distinct?: AssetScalarFieldEnum | AssetScalarFieldEnum[]
+  }
+
+  /**
+   * Asset create
+   */
+  export type AssetCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Asset
+     */
+    omit?: AssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Asset.
+     */
+    data: XOR<AssetCreateInput, AssetUncheckedCreateInput>
+  }
+
+  /**
+   * Asset createMany
+   */
+  export type AssetCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Assets.
+     */
+    data: AssetCreateManyInput | AssetCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Asset createManyAndReturn
+   */
+  export type AssetCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Asset
+     */
+    omit?: AssetOmit<ExtArgs> | null
+    /**
+     * The data used to create many Assets.
+     */
+    data: AssetCreateManyInput | AssetCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Asset update
+   */
+  export type AssetUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Asset
+     */
+    omit?: AssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Asset.
+     */
+    data: XOR<AssetUpdateInput, AssetUncheckedUpdateInput>
+    /**
+     * Choose, which Asset to update.
+     */
+    where: AssetWhereUniqueInput
+  }
+
+  /**
+   * Asset updateMany
+   */
+  export type AssetUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Assets.
+     */
+    data: XOR<AssetUpdateManyMutationInput, AssetUncheckedUpdateManyInput>
+    /**
+     * Filter which Assets to update
+     */
+    where?: AssetWhereInput
+    /**
+     * Limit how many Assets to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Asset updateManyAndReturn
+   */
+  export type AssetUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Asset
+     */
+    omit?: AssetOmit<ExtArgs> | null
+    /**
+     * The data used to update Assets.
+     */
+    data: XOR<AssetUpdateManyMutationInput, AssetUncheckedUpdateManyInput>
+    /**
+     * Filter which Assets to update
+     */
+    where?: AssetWhereInput
+    /**
+     * Limit how many Assets to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Asset upsert
+   */
+  export type AssetUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Asset
+     */
+    omit?: AssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Asset to update in case it exists.
+     */
+    where: AssetWhereUniqueInput
+    /**
+     * In case the Asset found by the `where` argument doesn't exist, create a new Asset with this data.
+     */
+    create: XOR<AssetCreateInput, AssetUncheckedCreateInput>
+    /**
+     * In case the Asset was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AssetUpdateInput, AssetUncheckedUpdateInput>
+  }
+
+  /**
+   * Asset delete
+   */
+  export type AssetDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Asset
+     */
+    omit?: AssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetInclude<ExtArgs> | null
+    /**
+     * Filter which Asset to delete.
+     */
+    where: AssetWhereUniqueInput
+  }
+
+  /**
+   * Asset deleteMany
+   */
+  export type AssetDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Assets to delete
+     */
+    where?: AssetWhereInput
+    /**
+     * Limit how many Assets to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Asset without action
+   */
+  export type AssetDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Asset
+     */
+    omit?: AssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -8072,6 +9401,23 @@ export namespace Prisma {
   export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
 
 
+  export const AssetScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    blueprint: 'blueprint',
+    category: 'category',
+    originalUrl: 'originalUrl',
+    cleanUrl: 'cleanUrl',
+    status: 'status',
+    retryCount: 'retryCount',
+    userId: 'userId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type AssetScalarFieldEnum = (typeof AssetScalarFieldEnum)[keyof typeof AssetScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -8137,6 +9483,34 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'AssetCategory'
+   */
+  export type EnumAssetCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AssetCategory'>
+    
+
+
+  /**
+   * Reference to a field of type 'AssetCategory[]'
+   */
+  export type ListEnumAssetCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AssetCategory[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'AssetsStatus'
+   */
+  export type EnumAssetsStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AssetsStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'AssetsStatus[]'
+   */
+  export type ListEnumAssetsStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AssetsStatus[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Int'
    */
   export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -8147,6 +9521,20 @@ export namespace Prisma {
    * Reference to a field of type 'Int[]'
    */
   export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float'
+   */
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float[]'
+   */
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
   /**
    * Deep Input Types
@@ -8223,6 +9611,7 @@ export namespace Prisma {
     accounts?: AccountListRelationFilter
     posts?: PostListRelationFilter
     projects?: ProjectListRelationFilter
+    assets?: AssetListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -8237,6 +9626,7 @@ export namespace Prisma {
     accounts?: AccountOrderByRelationAggregateInput
     posts?: PostOrderByRelationAggregateInput
     projects?: ProjectOrderByRelationAggregateInput
+    assets?: AssetOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -8254,6 +9644,7 @@ export namespace Prisma {
     accounts?: AccountListRelationFilter
     posts?: PostListRelationFilter
     projects?: ProjectListRelationFilter
+    assets?: AssetListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -8574,6 +9965,93 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"Project"> | Date | string
   }
 
+  export type AssetWhereInput = {
+    AND?: AssetWhereInput | AssetWhereInput[]
+    OR?: AssetWhereInput[]
+    NOT?: AssetWhereInput | AssetWhereInput[]
+    id?: StringFilter<"Asset"> | string
+    name?: StringNullableFilter<"Asset"> | string | null
+    blueprint?: StringNullableFilter<"Asset"> | string | null
+    category?: EnumAssetCategoryFilter<"Asset"> | $Enums.AssetCategory
+    originalUrl?: StringFilter<"Asset"> | string
+    cleanUrl?: StringNullableFilter<"Asset"> | string | null
+    status?: EnumAssetsStatusFilter<"Asset"> | $Enums.AssetsStatus
+    retryCount?: IntFilter<"Asset"> | number
+    userId?: StringFilter<"Asset"> | string
+    createdAt?: DateTimeFilter<"Asset"> | Date | string
+    updatedAt?: DateTimeFilter<"Asset"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type AssetOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrderInput | SortOrder
+    blueprint?: SortOrderInput | SortOrder
+    category?: SortOrder
+    originalUrl?: SortOrder
+    cleanUrl?: SortOrderInput | SortOrder
+    status?: SortOrder
+    retryCount?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type AssetWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AssetWhereInput | AssetWhereInput[]
+    OR?: AssetWhereInput[]
+    NOT?: AssetWhereInput | AssetWhereInput[]
+    name?: StringNullableFilter<"Asset"> | string | null
+    blueprint?: StringNullableFilter<"Asset"> | string | null
+    category?: EnumAssetCategoryFilter<"Asset"> | $Enums.AssetCategory
+    originalUrl?: StringFilter<"Asset"> | string
+    cleanUrl?: StringNullableFilter<"Asset"> | string | null
+    status?: EnumAssetsStatusFilter<"Asset"> | $Enums.AssetsStatus
+    retryCount?: IntFilter<"Asset"> | number
+    userId?: StringFilter<"Asset"> | string
+    createdAt?: DateTimeFilter<"Asset"> | Date | string
+    updatedAt?: DateTimeFilter<"Asset"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type AssetOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrderInput | SortOrder
+    blueprint?: SortOrderInput | SortOrder
+    category?: SortOrder
+    originalUrl?: SortOrder
+    cleanUrl?: SortOrderInput | SortOrder
+    status?: SortOrder
+    retryCount?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: AssetCountOrderByAggregateInput
+    _avg?: AssetAvgOrderByAggregateInput
+    _max?: AssetMaxOrderByAggregateInput
+    _min?: AssetMinOrderByAggregateInput
+    _sum?: AssetSumOrderByAggregateInput
+  }
+
+  export type AssetScalarWhereWithAggregatesInput = {
+    AND?: AssetScalarWhereWithAggregatesInput | AssetScalarWhereWithAggregatesInput[]
+    OR?: AssetScalarWhereWithAggregatesInput[]
+    NOT?: AssetScalarWhereWithAggregatesInput | AssetScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Asset"> | string
+    name?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    blueprint?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    category?: EnumAssetCategoryWithAggregatesFilter<"Asset"> | $Enums.AssetCategory
+    originalUrl?: StringWithAggregatesFilter<"Asset"> | string
+    cleanUrl?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    status?: EnumAssetsStatusWithAggregatesFilter<"Asset"> | $Enums.AssetsStatus
+    retryCount?: IntWithAggregatesFilter<"Asset"> | number
+    userId?: StringWithAggregatesFilter<"Asset"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Asset"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Asset"> | Date | string
+  }
+
   export type PostCreateInput = {
     id?: string
     name: string
@@ -8641,6 +10119,7 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutCreatedByInput
     projects?: ProjectCreateNestedManyWithoutUserInput
+    assets?: AssetCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -8655,6 +10134,7 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
+    assets?: AssetUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -8669,6 +10149,7 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutCreatedByNestedInput
     projects?: ProjectUpdateManyWithoutUserNestedInput
+    assets?: AssetUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -8683,6 +10164,7 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
+    assets?: AssetUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -9041,6 +10523,103 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type AssetCreateInput = {
+    id?: string
+    name?: string | null
+    blueprint?: string | null
+    category: $Enums.AssetCategory
+    originalUrl: string
+    cleanUrl?: string | null
+    status?: $Enums.AssetsStatus
+    retryCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutAssetsInput
+  }
+
+  export type AssetUncheckedCreateInput = {
+    id?: string
+    name?: string | null
+    blueprint?: string | null
+    category: $Enums.AssetCategory
+    originalUrl: string
+    cleanUrl?: string | null
+    status?: $Enums.AssetsStatus
+    retryCount?: number
+    userId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AssetUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    blueprint?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: EnumAssetCategoryFieldUpdateOperationsInput | $Enums.AssetCategory
+    originalUrl?: StringFieldUpdateOperationsInput | string
+    cleanUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumAssetsStatusFieldUpdateOperationsInput | $Enums.AssetsStatus
+    retryCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutAssetsNestedInput
+  }
+
+  export type AssetUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    blueprint?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: EnumAssetCategoryFieldUpdateOperationsInput | $Enums.AssetCategory
+    originalUrl?: StringFieldUpdateOperationsInput | string
+    cleanUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumAssetsStatusFieldUpdateOperationsInput | $Enums.AssetsStatus
+    retryCount?: IntFieldUpdateOperationsInput | number
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AssetCreateManyInput = {
+    id?: string
+    name?: string | null
+    blueprint?: string | null
+    category: $Enums.AssetCategory
+    originalUrl: string
+    cleanUrl?: string | null
+    status?: $Enums.AssetsStatus
+    retryCount?: number
+    userId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AssetUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    blueprint?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: EnumAssetCategoryFieldUpdateOperationsInput | $Enums.AssetCategory
+    originalUrl?: StringFieldUpdateOperationsInput | string
+    cleanUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumAssetsStatusFieldUpdateOperationsInput | $Enums.AssetsStatus
+    retryCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AssetUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    blueprint?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: EnumAssetCategoryFieldUpdateOperationsInput | $Enums.AssetCategory
+    originalUrl?: StringFieldUpdateOperationsInput | string
+    cleanUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumAssetsStatusFieldUpdateOperationsInput | $Enums.AssetsStatus
+    retryCount?: IntFieldUpdateOperationsInput | number
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -9172,6 +10751,12 @@ export namespace Prisma {
     none?: ProjectWhereInput
   }
 
+  export type AssetListRelationFilter = {
+    every?: AssetWhereInput
+    some?: AssetWhereInput
+    none?: AssetWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -9190,6 +10775,10 @@ export namespace Prisma {
   }
 
   export type ProjectOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AssetOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -9415,6 +11004,117 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type EnumAssetCategoryFilter<$PrismaModel = never> = {
+    equals?: $Enums.AssetCategory | EnumAssetCategoryFieldRefInput<$PrismaModel>
+    in?: $Enums.AssetCategory[] | ListEnumAssetCategoryFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AssetCategory[] | ListEnumAssetCategoryFieldRefInput<$PrismaModel>
+    not?: NestedEnumAssetCategoryFilter<$PrismaModel> | $Enums.AssetCategory
+  }
+
+  export type EnumAssetsStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.AssetsStatus | EnumAssetsStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AssetsStatus[] | ListEnumAssetsStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AssetsStatus[] | ListEnumAssetsStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumAssetsStatusFilter<$PrismaModel> | $Enums.AssetsStatus
+  }
+
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type AssetCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    blueprint?: SortOrder
+    category?: SortOrder
+    originalUrl?: SortOrder
+    cleanUrl?: SortOrder
+    status?: SortOrder
+    retryCount?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AssetAvgOrderByAggregateInput = {
+    retryCount?: SortOrder
+  }
+
+  export type AssetMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    blueprint?: SortOrder
+    category?: SortOrder
+    originalUrl?: SortOrder
+    cleanUrl?: SortOrder
+    status?: SortOrder
+    retryCount?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AssetMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    blueprint?: SortOrder
+    category?: SortOrder
+    originalUrl?: SortOrder
+    cleanUrl?: SortOrder
+    status?: SortOrder
+    retryCount?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AssetSumOrderByAggregateInput = {
+    retryCount?: SortOrder
+  }
+
+  export type EnumAssetCategoryWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AssetCategory | EnumAssetCategoryFieldRefInput<$PrismaModel>
+    in?: $Enums.AssetCategory[] | ListEnumAssetCategoryFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AssetCategory[] | ListEnumAssetCategoryFieldRefInput<$PrismaModel>
+    not?: NestedEnumAssetCategoryWithAggregatesFilter<$PrismaModel> | $Enums.AssetCategory
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAssetCategoryFilter<$PrismaModel>
+    _max?: NestedEnumAssetCategoryFilter<$PrismaModel>
+  }
+
+  export type EnumAssetsStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AssetsStatus | EnumAssetsStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AssetsStatus[] | ListEnumAssetsStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AssetsStatus[] | ListEnumAssetsStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumAssetsStatusWithAggregatesFilter<$PrismaModel> | $Enums.AssetsStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAssetsStatusFilter<$PrismaModel>
+    _max?: NestedEnumAssetsStatusFilter<$PrismaModel>
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
   export type UserCreateNestedOneWithoutPostsInput = {
     create?: XOR<UserCreateWithoutPostsInput, UserUncheckedCreateWithoutPostsInput>
     connectOrCreate?: UserCreateOrConnectWithoutPostsInput
@@ -9465,6 +11165,13 @@ export namespace Prisma {
     connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
   }
 
+  export type AssetCreateNestedManyWithoutUserInput = {
+    create?: XOR<AssetCreateWithoutUserInput, AssetUncheckedCreateWithoutUserInput> | AssetCreateWithoutUserInput[] | AssetUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AssetCreateOrConnectWithoutUserInput | AssetCreateOrConnectWithoutUserInput[]
+    createMany?: AssetCreateManyUserInputEnvelope
+    connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+  }
+
   export type SessionUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
@@ -9491,6 +11198,13 @@ export namespace Prisma {
     connectOrCreate?: ProjectCreateOrConnectWithoutUserInput | ProjectCreateOrConnectWithoutUserInput[]
     createMany?: ProjectCreateManyUserInputEnvelope
     connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+  }
+
+  export type AssetUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<AssetCreateWithoutUserInput, AssetUncheckedCreateWithoutUserInput> | AssetCreateWithoutUserInput[] | AssetUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AssetCreateOrConnectWithoutUserInput | AssetCreateOrConnectWithoutUserInput[]
+    createMany?: AssetCreateManyUserInputEnvelope
+    connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
   }
 
   export type BoolFieldUpdateOperationsInput = {
@@ -9557,6 +11271,20 @@ export namespace Prisma {
     deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
   }
 
+  export type AssetUpdateManyWithoutUserNestedInput = {
+    create?: XOR<AssetCreateWithoutUserInput, AssetUncheckedCreateWithoutUserInput> | AssetCreateWithoutUserInput[] | AssetUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AssetCreateOrConnectWithoutUserInput | AssetCreateOrConnectWithoutUserInput[]
+    upsert?: AssetUpsertWithWhereUniqueWithoutUserInput | AssetUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: AssetCreateManyUserInputEnvelope
+    set?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+    disconnect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+    delete?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+    connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+    update?: AssetUpdateWithWhereUniqueWithoutUserInput | AssetUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: AssetUpdateManyWithWhereWithoutUserInput | AssetUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: AssetScalarWhereInput | AssetScalarWhereInput[]
+  }
+
   export type SessionUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
@@ -9613,6 +11341,20 @@ export namespace Prisma {
     deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
   }
 
+  export type AssetUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<AssetCreateWithoutUserInput, AssetUncheckedCreateWithoutUserInput> | AssetCreateWithoutUserInput[] | AssetUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AssetCreateOrConnectWithoutUserInput | AssetCreateOrConnectWithoutUserInput[]
+    upsert?: AssetUpsertWithWhereUniqueWithoutUserInput | AssetUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: AssetCreateManyUserInputEnvelope
+    set?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+    disconnect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+    delete?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+    connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+    update?: AssetUpdateWithWhereUniqueWithoutUserInput | AssetUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: AssetUpdateManyWithWhereWithoutUserInput | AssetUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: AssetScalarWhereInput | AssetScalarWhereInput[]
+  }
+
   export type UserCreateNestedOneWithoutSessionsInput = {
     create?: XOR<UserCreateWithoutSessionsInput, UserUncheckedCreateWithoutSessionsInput>
     connectOrCreate?: UserCreateOrConnectWithoutSessionsInput
@@ -9657,6 +11399,36 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutProjectsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutProjectsInput, UserUpdateWithoutProjectsInput>, UserUncheckedUpdateWithoutProjectsInput>
+  }
+
+  export type UserCreateNestedOneWithoutAssetsInput = {
+    create?: XOR<UserCreateWithoutAssetsInput, UserUncheckedCreateWithoutAssetsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAssetsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumAssetCategoryFieldUpdateOperationsInput = {
+    set?: $Enums.AssetCategory
+  }
+
+  export type EnumAssetsStatusFieldUpdateOperationsInput = {
+    set?: $Enums.AssetsStatus
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type UserUpdateOneRequiredWithoutAssetsNestedInput = {
+    create?: XOR<UserCreateWithoutAssetsInput, UserUncheckedCreateWithoutAssetsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAssetsInput
+    upsert?: UserUpsertWithoutAssetsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAssetsInput, UserUpdateWithoutAssetsInput>, UserUncheckedUpdateWithoutAssetsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -9806,6 +11578,67 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
+  export type NestedEnumAssetCategoryFilter<$PrismaModel = never> = {
+    equals?: $Enums.AssetCategory | EnumAssetCategoryFieldRefInput<$PrismaModel>
+    in?: $Enums.AssetCategory[] | ListEnumAssetCategoryFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AssetCategory[] | ListEnumAssetCategoryFieldRefInput<$PrismaModel>
+    not?: NestedEnumAssetCategoryFilter<$PrismaModel> | $Enums.AssetCategory
+  }
+
+  export type NestedEnumAssetsStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.AssetsStatus | EnumAssetsStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AssetsStatus[] | ListEnumAssetsStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AssetsStatus[] | ListEnumAssetsStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumAssetsStatusFilter<$PrismaModel> | $Enums.AssetsStatus
+  }
+
+  export type NestedEnumAssetCategoryWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AssetCategory | EnumAssetCategoryFieldRefInput<$PrismaModel>
+    in?: $Enums.AssetCategory[] | ListEnumAssetCategoryFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AssetCategory[] | ListEnumAssetCategoryFieldRefInput<$PrismaModel>
+    not?: NestedEnumAssetCategoryWithAggregatesFilter<$PrismaModel> | $Enums.AssetCategory
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAssetCategoryFilter<$PrismaModel>
+    _max?: NestedEnumAssetCategoryFilter<$PrismaModel>
+  }
+
+  export type NestedEnumAssetsStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AssetsStatus | EnumAssetsStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AssetsStatus[] | ListEnumAssetsStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AssetsStatus[] | ListEnumAssetsStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumAssetsStatusWithAggregatesFilter<$PrismaModel> | $Enums.AssetsStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAssetsStatusFilter<$PrismaModel>
+    _max?: NestedEnumAssetsStatusFilter<$PrismaModel>
+  }
+
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
   export type UserCreateWithoutPostsInput = {
     id: string
     name: string
@@ -9817,6 +11650,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     projects?: ProjectCreateNestedManyWithoutUserInput
+    assets?: AssetCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPostsInput = {
@@ -9830,6 +11664,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
+    assets?: AssetUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPostsInput = {
@@ -9859,6 +11694,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     projects?: ProjectUpdateManyWithoutUserNestedInput
+    assets?: AssetUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPostsInput = {
@@ -9872,6 +11708,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
+    assets?: AssetUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SessionCreateWithoutUserInput = {
@@ -9998,6 +11835,42 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type AssetCreateWithoutUserInput = {
+    id?: string
+    name?: string | null
+    blueprint?: string | null
+    category: $Enums.AssetCategory
+    originalUrl: string
+    cleanUrl?: string | null
+    status?: $Enums.AssetsStatus
+    retryCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AssetUncheckedCreateWithoutUserInput = {
+    id?: string
+    name?: string | null
+    blueprint?: string | null
+    category: $Enums.AssetCategory
+    originalUrl: string
+    cleanUrl?: string | null
+    status?: $Enums.AssetsStatus
+    retryCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AssetCreateOrConnectWithoutUserInput = {
+    where: AssetWhereUniqueInput
+    create: XOR<AssetCreateWithoutUserInput, AssetUncheckedCreateWithoutUserInput>
+  }
+
+  export type AssetCreateManyUserInputEnvelope = {
+    data: AssetCreateManyUserInput | AssetCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type SessionUpsertWithWhereUniqueWithoutUserInput = {
     where: SessionWhereUniqueInput
     update: XOR<SessionUpdateWithoutUserInput, SessionUncheckedUpdateWithoutUserInput>
@@ -10120,6 +11993,39 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Project"> | Date | string
   }
 
+  export type AssetUpsertWithWhereUniqueWithoutUserInput = {
+    where: AssetWhereUniqueInput
+    update: XOR<AssetUpdateWithoutUserInput, AssetUncheckedUpdateWithoutUserInput>
+    create: XOR<AssetCreateWithoutUserInput, AssetUncheckedCreateWithoutUserInput>
+  }
+
+  export type AssetUpdateWithWhereUniqueWithoutUserInput = {
+    where: AssetWhereUniqueInput
+    data: XOR<AssetUpdateWithoutUserInput, AssetUncheckedUpdateWithoutUserInput>
+  }
+
+  export type AssetUpdateManyWithWhereWithoutUserInput = {
+    where: AssetScalarWhereInput
+    data: XOR<AssetUpdateManyMutationInput, AssetUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type AssetScalarWhereInput = {
+    AND?: AssetScalarWhereInput | AssetScalarWhereInput[]
+    OR?: AssetScalarWhereInput[]
+    NOT?: AssetScalarWhereInput | AssetScalarWhereInput[]
+    id?: StringFilter<"Asset"> | string
+    name?: StringNullableFilter<"Asset"> | string | null
+    blueprint?: StringNullableFilter<"Asset"> | string | null
+    category?: EnumAssetCategoryFilter<"Asset"> | $Enums.AssetCategory
+    originalUrl?: StringFilter<"Asset"> | string
+    cleanUrl?: StringNullableFilter<"Asset"> | string | null
+    status?: EnumAssetsStatusFilter<"Asset"> | $Enums.AssetsStatus
+    retryCount?: IntFilter<"Asset"> | number
+    userId?: StringFilter<"Asset"> | string
+    createdAt?: DateTimeFilter<"Asset"> | Date | string
+    updatedAt?: DateTimeFilter<"Asset"> | Date | string
+  }
+
   export type UserCreateWithoutSessionsInput = {
     id: string
     name: string
@@ -10131,6 +12037,7 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutCreatedByInput
     projects?: ProjectCreateNestedManyWithoutUserInput
+    assets?: AssetCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -10144,6 +12051,7 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
+    assets?: AssetUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -10173,6 +12081,7 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutCreatedByNestedInput
     projects?: ProjectUpdateManyWithoutUserNestedInput
+    assets?: AssetUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -10186,6 +12095,7 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
+    assets?: AssetUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAccountsInput = {
@@ -10199,6 +12109,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutCreatedByInput
     projects?: ProjectCreateNestedManyWithoutUserInput
+    assets?: AssetCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -10212,6 +12123,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
+    assets?: AssetUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -10241,6 +12153,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutCreatedByNestedInput
     projects?: ProjectUpdateManyWithoutUserNestedInput
+    assets?: AssetUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -10254,6 +12167,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
+    assets?: AssetUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutProjectsInput = {
@@ -10267,6 +12181,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutCreatedByInput
+    assets?: AssetCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProjectsInput = {
@@ -10280,6 +12195,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
+    assets?: AssetUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProjectsInput = {
@@ -10309,6 +12225,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutCreatedByNestedInput
+    assets?: AssetUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProjectsInput = {
@@ -10322,6 +12239,79 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
+    assets?: AssetUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutAssetsInput = {
+    id: string
+    name: string
+    email: string
+    emailVerified?: boolean
+    image?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    posts?: PostCreateNestedManyWithoutCreatedByInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutAssetsInput = {
+    id: string
+    name: string
+    email: string
+    emailVerified?: boolean
+    image?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutAssetsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutAssetsInput, UserUncheckedCreateWithoutAssetsInput>
+  }
+
+  export type UserUpsertWithoutAssetsInput = {
+    update: XOR<UserUpdateWithoutAssetsInput, UserUncheckedUpdateWithoutAssetsInput>
+    create: XOR<UserCreateWithoutAssetsInput, UserUncheckedCreateWithoutAssetsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutAssetsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutAssetsInput, UserUncheckedUpdateWithoutAssetsInput>
+  }
+
+  export type UserUpdateWithoutAssetsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    posts?: PostUpdateManyWithoutCreatedByNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutAssetsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SessionCreateManyUserInput = {
@@ -10362,6 +12352,19 @@ export namespace Prisma {
     imageUrl: string
     imageKitId: string
     filePath: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AssetCreateManyUserInput = {
+    id?: string
+    name?: string | null
+    blueprint?: string | null
+    category: $Enums.AssetCategory
+    originalUrl: string
+    cleanUrl?: string | null
+    status?: $Enums.AssetsStatus
+    retryCount?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -10488,6 +12491,45 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     imageKitId?: StringFieldUpdateOperationsInput | string
     filePath?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AssetUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    blueprint?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: EnumAssetCategoryFieldUpdateOperationsInput | $Enums.AssetCategory
+    originalUrl?: StringFieldUpdateOperationsInput | string
+    cleanUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumAssetsStatusFieldUpdateOperationsInput | $Enums.AssetsStatus
+    retryCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AssetUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    blueprint?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: EnumAssetCategoryFieldUpdateOperationsInput | $Enums.AssetCategory
+    originalUrl?: StringFieldUpdateOperationsInput | string
+    cleanUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumAssetsStatusFieldUpdateOperationsInput | $Enums.AssetsStatus
+    retryCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AssetUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    blueprint?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: EnumAssetCategoryFieldUpdateOperationsInput | $Enums.AssetCategory
+    originalUrl?: StringFieldUpdateOperationsInput | string
+    cleanUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumAssetsStatusFieldUpdateOperationsInput | $Enums.AssetsStatus
+    retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
