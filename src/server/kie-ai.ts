@@ -62,13 +62,19 @@ export async function submitTask(imageUrl: string, prompt: string) {
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export async function pollTask(taskId: string) {
+export async function pollTask(taskId: string): Promise<
+  { state: "success"; imageUrl: string } | 
+  { state: "failed"; error: string } | 
+  { state: "pending" }
+> {
   let apiKey = env.KIE_AI_API_KEY.trim().replace(/^["']|["']$/g, '');
   if (apiKey.startsWith("Bearer ")) {
     apiKey = apiKey.replace("Bearer ", "").trim();
   }
-  // Poll every 4 seconds until done (max 15 attempts = 60s)
-  for (let i = 0; i < 15; i++) {
+
+  // Poll exactly 2 times with 4s delay (max 8s wait)
+  // This keeps individual serverless function calls short
+  for (let i = 0; i < 2; i++) {
     const response = await fetch(`https://api.kie.ai/api/v1/jobs/recordInfo?taskId=${taskId}`, {
       headers: {
         Authorization: `Bearer ${apiKey}`,
@@ -85,16 +91,21 @@ export async function pollTask(taskId: string) {
 
     if (data.state === "success") {
       const resultObj = JSON.parse(data.resultJson ?? "{}") as { resultUrls?: string[] };
-      return { success: true, imageUrl: resultObj.resultUrls?.[0] };
+      const imageUrl = resultObj.resultUrls?.[0];
+      if (!imageUrl) throw new Error("Success state but no imageUrl found");
+      return { state: "success", imageUrl };
     }
 
     if (data.state === "fail" || data.state === "failed") {
-      return { success: false, error: data.failedReason ?? "kie.ai processing failed" };
+      return { state: "failed", error: data.failedReason ?? "kie.ai processing failed" };
     }
 
-    // Wait 4 seconds before trying again
-    await delay(4000);
+    // If still pending/processing, wait before checking again if we have more attempts
+    if (i < 1) {
+      await delay(4000);
+    }
   }
 
-  return { success: false, error: "Polling timed out after 60 seconds" };
+  // If we finish the loop without success/fail, it's still pending
+  return { state: "pending" };
 }

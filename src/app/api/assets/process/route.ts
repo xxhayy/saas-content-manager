@@ -6,6 +6,8 @@ import { uploadToImageKit } from "@/server/imagekit";
 
 const MAX_RETRIES = 3;
 
+export const maxDuration = 60; // 1 minute is plenty with our 10s granular polling
+
 export async function POST(req: NextRequest) {
   // Verify internal secret
   const secret = req.headers.get("x-internal-secret");
@@ -14,7 +16,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = (await req.json()) as { userId: string };
-  console.log(`[Worker] Started process for user: ${body.userId}`);
+  console.log(`[Worker] Checking tasks for user: ${body.userId}`);
 
   try {
     // Find the oldest PROCESSING asset for this user
@@ -28,70 +30,85 @@ export async function POST(req: NextRequest) {
       return Response.json({ message: "No assets to process" });
     }
 
-    console.log(`[Worker] Processing asset: ${asset.id} (${asset.category})`);
-
-    // Get the category-specific prompt
     const prompt = CATEGORY_PROMPTS[asset.category];
+    let nextDelay = 2000; // Default delay for next check
 
     try {
-      // Submit to kie.ai
-      const taskId = await submitTask(asset.originalUrl, prompt);
+      if (!asset.kieTaskId) {
+        // STEP 1: Submit to kie.ai
+        console.log(`[Worker] Submitting asset ${asset.id} to kie.ai`);
+        const taskId = await submitTask(asset.originalUrl, prompt);
+        
+        if (!taskId) throw new Error("No taskId returned from kie.ai");
 
-      if (!taskId) {
-        throw new Error("No taskId returned from kie.ai");
-      }
-
-      // Poll until done
-      const result = await pollTask(taskId);
-
-      if (result.success && result.imageUrl) {
-        console.log(`[Worker] Successfully processed asset ${asset.id}`);
-        // Upload clean image to ImageKit
-        const cleanUrl = await uploadToImageKit(
-          result.imageUrl,
-          `clean-${asset.id}.png`,
-          "/assets/clean"
-        );
-
-        // Update DB → COMPLETED
         await db.asset.update({
           where: { id: asset.id },
-          data: {
-            cleanUrl,
-            status: "COMPLETED",
-            name: `Asset ${asset.id.slice(-6)}`,
+          data: { kieTaskId: taskId },
+        });
+
+        console.log(`[Worker] Submitted. TaskId: ${taskId}. Re-queueing for poll.`);
+        nextDelay = 5000; // Wait 5s before first poll
+      } else {
+        // STEP 2: Poll existing task
+        console.log(`[Worker] Polling kie.ai for asset ${asset.id} (TaskId: ${asset.kieTaskId})`);
+        const result = await pollTask(asset.kieTaskId);
+
+        if (result.state === "success") {
+          console.log(`[Worker] Asset ${asset.id} succeeded. Uploading...`);
+          const cleanUrl = await uploadToImageKit(
+            result.imageUrl,
+            `clean-${asset.id}.png`,
+            "/assets/clean"
+          );
+
+          await db.asset.update({
+            where: { id: asset.id },
+            data: {
+              cleanUrl,
+              status: "COMPLETED",
+              name: `Asset ${asset.id.slice(-6)}`,
+            },
+          });
+          nextDelay = 1000; // Move quickly to next asset
+        } else if (result.state === "failed") {
+          console.error(`[Worker] Asset ${asset.id} failed: ${result.error}`);
+          throw new Error(result.error);
+        } else {
+          // Still pending
+          console.log(`[Worker] Asset ${asset.id} still processing. Re-queueing...`);
+          nextDelay = 10000; // Small wait to avoid overwhelming the API
+        }
+      }
+    } catch (processingError) {
+      const errorMessage = processingError instanceof Error ? processingError.message : "Unknown error";
+      console.error(`[Worker] Error processing asset ${asset.id}:`, errorMessage);
+
+      if (asset.retryCount + 1 >= MAX_RETRIES) {
+        await db.asset.update({
+          where: { id: asset.id },
+          data: { 
+            status: "FAILED", 
+            retryCount: asset.retryCount + 1,
+            kieError: errorMessage 
           },
         });
       } else {
-        console.error(`[Worker] AI processing failed for asset ${asset.id}: ${result.error}`);
-        throw new Error(result.error ?? "Processing failed");
-      }
-    } catch (processingError) {
-      console.error(`Processing failed for asset ${asset.id}:`, processingError);
-
-      if (asset.retryCount + 1 >= MAX_RETRIES) {
-        // Mark as FAILED after max retries
-        await db.asset.update({
-          where: { id: asset.id },
-          data: { status: "FAILED", retryCount: asset.retryCount + 1 },
-        });
-      } else {
-        // Increment retry count, keep as PROCESSING for next pass
         await db.asset.update({
           where: { id: asset.id },
           data: { retryCount: asset.retryCount + 1 },
         });
       }
+      nextDelay = 2000;
     }
 
-    // Chain: check if more PROCESSING assets exist, call self again
+    // Chain: check if more/still PROCESSING assets exist
     const remaining = await db.asset.count({
       where: { userId: body.userId, status: "PROCESSING" },
     });
 
     if (remaining > 0) {
       const baseUrl = req.nextUrl.origin;
-      // Small delay to prevent recursion depth issues and overwhelming the API
+      console.log(`[Worker] ${remaining} assets still need attention. Triggering next worker in ${nextDelay}ms`);
       setTimeout(() => {
         void fetch(`${baseUrl}/api/assets/process`, {
           method: "POST",
@@ -101,12 +118,12 @@ export async function POST(req: NextRequest) {
           },
           body: JSON.stringify({ userId: body.userId }),
         });
-      }, 2000);
+      }, nextDelay);
     }
 
-    return Response.json({ message: "Processed" });
+    return Response.json({ message: "Task handled", assetId: asset.id });
   } catch (error) {
-    console.error("Process-next error:", error);
+    console.error("Process-next fatal error:", error);
     return Response.json({ error: "Internal server error" }, { status: 500 });
   }
 }

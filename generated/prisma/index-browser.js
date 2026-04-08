@@ -193,6 +193,8 @@ exports.Prisma.AssetScalarFieldEnum = {
   category: 'category',
   originalUrl: 'originalUrl',
   cleanUrl: 'cleanUrl',
+  kieTaskId: 'kieTaskId',
+  kieError: 'kieError',
   status: 'status',
   retryCount: 'retryCount',
   userId: 'userId',

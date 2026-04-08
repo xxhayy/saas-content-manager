@@ -127,6 +127,8 @@ model Asset {
   category    AssetCategory
   originalUrl String
   cleanUrl    String?
+  kieTaskId   String?
+  kieError    String?
   status      AssetsStatus  @default(PROCESSING)
   retryCount  Int           @default(0)
   userId      String

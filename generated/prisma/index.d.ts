@@ -8161,6 +8161,8 @@ export namespace Prisma {
     category: $Enums.AssetCategory | null
     originalUrl: string | null
     cleanUrl: string | null
+    kieTaskId: string | null
+    kieError: string | null
     status: $Enums.AssetsStatus | null
     retryCount: number | null
     userId: string | null
@@ -8175,6 +8177,8 @@ export namespace Prisma {
     category: $Enums.AssetCategory | null
     originalUrl: string | null
     cleanUrl: string | null
+    kieTaskId: string | null
+    kieError: string | null
     status: $Enums.AssetsStatus | null
     retryCount: number | null
     userId: string | null
@@ -8189,6 +8193,8 @@ export namespace Prisma {
     category: number
     originalUrl: number
     cleanUrl: number
+    kieTaskId: number
+    kieError: number
     status: number
     retryCount: number
     userId: number
@@ -8213,6 +8219,8 @@ export namespace Prisma {
     category?: true
     originalUrl?: true
     cleanUrl?: true
+    kieTaskId?: true
+    kieError?: true
     status?: true
     retryCount?: true
     userId?: true
@@ -8227,6 +8235,8 @@ export namespace Prisma {
     category?: true
     originalUrl?: true
     cleanUrl?: true
+    kieTaskId?: true
+    kieError?: true
     status?: true
     retryCount?: true
     userId?: true
@@ -8241,6 +8251,8 @@ export namespace Prisma {
     category?: true
     originalUrl?: true
     cleanUrl?: true
+    kieTaskId?: true
+    kieError?: true
     status?: true
     retryCount?: true
     userId?: true
@@ -8342,6 +8354,8 @@ export namespace Prisma {
     category: $Enums.AssetCategory
     originalUrl: string
     cleanUrl: string | null
+    kieTaskId: string | null
+    kieError: string | null
     status: $Enums.AssetsStatus
     retryCount: number
     userId: string
@@ -8375,6 +8389,8 @@ export namespace Prisma {
     category?: boolean
     originalUrl?: boolean
     cleanUrl?: boolean
+    kieTaskId?: boolean
+    kieError?: boolean
     status?: boolean
     retryCount?: boolean
     userId?: boolean
@@ -8390,6 +8406,8 @@ export namespace Prisma {
     category?: boolean
     originalUrl?: boolean
     cleanUrl?: boolean
+    kieTaskId?: boolean
+    kieError?: boolean
     status?: boolean
     retryCount?: boolean
     userId?: boolean
@@ -8405,6 +8423,8 @@ export namespace Prisma {
     category?: boolean
     originalUrl?: boolean
     cleanUrl?: boolean
+    kieTaskId?: boolean
+    kieError?: boolean
     status?: boolean
     retryCount?: boolean
     userId?: boolean
@@ -8420,6 +8440,8 @@ export namespace Prisma {
     category?: boolean
     originalUrl?: boolean
     cleanUrl?: boolean
+    kieTaskId?: boolean
+    kieError?: boolean
     status?: boolean
     retryCount?: boolean
     userId?: boolean
@@ -8427,7 +8449,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type AssetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "blueprint" | "category" | "originalUrl" | "cleanUrl" | "status" | "retryCount" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["asset"]>
+  export type AssetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "blueprint" | "category" | "originalUrl" | "cleanUrl" | "kieTaskId" | "kieError" | "status" | "retryCount" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["asset"]>
   export type AssetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -8450,6 +8472,8 @@ export namespace Prisma {
       category: $Enums.AssetCategory
       originalUrl: string
       cleanUrl: string | null
+      kieTaskId: string | null
+      kieError: string | null
       status: $Enums.AssetsStatus
       retryCount: number
       userId: string
@@ -8885,6 +8909,8 @@ export namespace Prisma {
     readonly category: FieldRef<"Asset", 'AssetCategory'>
     readonly originalUrl: FieldRef<"Asset", 'String'>
     readonly cleanUrl: FieldRef<"Asset", 'String'>
+    readonly kieTaskId: FieldRef<"Asset", 'String'>
+    readonly kieError: FieldRef<"Asset", 'String'>
     readonly status: FieldRef<"Asset", 'AssetsStatus'>
     readonly retryCount: FieldRef<"Asset", 'Int'>
     readonly userId: FieldRef<"Asset", 'String'>
@@ -9408,6 +9434,8 @@ export namespace Prisma {
     category: 'category',
     originalUrl: 'originalUrl',
     cleanUrl: 'cleanUrl',
+    kieTaskId: 'kieTaskId',
+    kieError: 'kieError',
     status: 'status',
     retryCount: 'retryCount',
     userId: 'userId',
@@ -9975,6 +10003,8 @@ export namespace Prisma {
     category?: EnumAssetCategoryFilter<"Asset"> | $Enums.AssetCategory
     originalUrl?: StringFilter<"Asset"> | string
     cleanUrl?: StringNullableFilter<"Asset"> | string | null
+    kieTaskId?: StringNullableFilter<"Asset"> | string | null
+    kieError?: StringNullableFilter<"Asset"> | string | null
     status?: EnumAssetsStatusFilter<"Asset"> | $Enums.AssetsStatus
     retryCount?: IntFilter<"Asset"> | number
     userId?: StringFilter<"Asset"> | string
@@ -9990,6 +10020,8 @@ export namespace Prisma {
     category?: SortOrder
     originalUrl?: SortOrder
     cleanUrl?: SortOrderInput | SortOrder
+    kieTaskId?: SortOrderInput | SortOrder
+    kieError?: SortOrderInput | SortOrder
     status?: SortOrder
     retryCount?: SortOrder
     userId?: SortOrder
@@ -10008,6 +10040,8 @@ export namespace Prisma {
     category?: EnumAssetCategoryFilter<"Asset"> | $Enums.AssetCategory
     originalUrl?: StringFilter<"Asset"> | string
     cleanUrl?: StringNullableFilter<"Asset"> | string | null
+    kieTaskId?: StringNullableFilter<"Asset"> | string | null
+    kieError?: StringNullableFilter<"Asset"> | string | null
     status?: EnumAssetsStatusFilter<"Asset"> | $Enums.AssetsStatus
     retryCount?: IntFilter<"Asset"> | number
     userId?: StringFilter<"Asset"> | string
@@ -10023,6 +10057,8 @@ export namespace Prisma {
     category?: SortOrder
     originalUrl?: SortOrder
     cleanUrl?: SortOrderInput | SortOrder
+    kieTaskId?: SortOrderInput | SortOrder
+    kieError?: SortOrderInput | SortOrder
     status?: SortOrder
     retryCount?: SortOrder
     userId?: SortOrder
@@ -10045,6 +10081,8 @@ export namespace Prisma {
     category?: EnumAssetCategoryWithAggregatesFilter<"Asset"> | $Enums.AssetCategory
     originalUrl?: StringWithAggregatesFilter<"Asset"> | string
     cleanUrl?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    kieTaskId?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    kieError?: StringNullableWithAggregatesFilter<"Asset"> | string | null
     status?: EnumAssetsStatusWithAggregatesFilter<"Asset"> | $Enums.AssetsStatus
     retryCount?: IntWithAggregatesFilter<"Asset"> | number
     userId?: StringWithAggregatesFilter<"Asset"> | string
@@ -10530,6 +10568,8 @@ export namespace Prisma {
     category: $Enums.AssetCategory
     originalUrl: string
     cleanUrl?: string | null
+    kieTaskId?: string | null
+    kieError?: string | null
     status?: $Enums.AssetsStatus
     retryCount?: number
     createdAt?: Date | string
@@ -10544,6 +10584,8 @@ export namespace Prisma {
     category: $Enums.AssetCategory
     originalUrl: string
     cleanUrl?: string | null
+    kieTaskId?: string | null
+    kieError?: string | null
     status?: $Enums.AssetsStatus
     retryCount?: number
     userId: string
@@ -10558,6 +10600,8 @@ export namespace Prisma {
     category?: EnumAssetCategoryFieldUpdateOperationsInput | $Enums.AssetCategory
     originalUrl?: StringFieldUpdateOperationsInput | string
     cleanUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    kieTaskId?: NullableStringFieldUpdateOperationsInput | string | null
+    kieError?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetsStatusFieldUpdateOperationsInput | $Enums.AssetsStatus
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10572,6 +10616,8 @@ export namespace Prisma {
     category?: EnumAssetCategoryFieldUpdateOperationsInput | $Enums.AssetCategory
     originalUrl?: StringFieldUpdateOperationsInput | string
     cleanUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    kieTaskId?: NullableStringFieldUpdateOperationsInput | string | null
+    kieError?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetsStatusFieldUpdateOperationsInput | $Enums.AssetsStatus
     retryCount?: IntFieldUpdateOperationsInput | number
     userId?: StringFieldUpdateOperationsInput | string
@@ -10586,6 +10632,8 @@ export namespace Prisma {
     category: $Enums.AssetCategory
     originalUrl: string
     cleanUrl?: string | null
+    kieTaskId?: string | null
+    kieError?: string | null
     status?: $Enums.AssetsStatus
     retryCount?: number
     userId: string
@@ -10600,6 +10648,8 @@ export namespace Prisma {
     category?: EnumAssetCategoryFieldUpdateOperationsInput | $Enums.AssetCategory
     originalUrl?: StringFieldUpdateOperationsInput | string
     cleanUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    kieTaskId?: NullableStringFieldUpdateOperationsInput | string | null
+    kieError?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetsStatusFieldUpdateOperationsInput | $Enums.AssetsStatus
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10613,6 +10663,8 @@ export namespace Prisma {
     category?: EnumAssetCategoryFieldUpdateOperationsInput | $Enums.AssetCategory
     originalUrl?: StringFieldUpdateOperationsInput | string
     cleanUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    kieTaskId?: NullableStringFieldUpdateOperationsInput | string | null
+    kieError?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetsStatusFieldUpdateOperationsInput | $Enums.AssetsStatus
     retryCount?: IntFieldUpdateOperationsInput | number
     userId?: StringFieldUpdateOperationsInput | string
@@ -11036,6 +11088,8 @@ export namespace Prisma {
     category?: SortOrder
     originalUrl?: SortOrder
     cleanUrl?: SortOrder
+    kieTaskId?: SortOrder
+    kieError?: SortOrder
     status?: SortOrder
     retryCount?: SortOrder
     userId?: SortOrder
@@ -11054,6 +11108,8 @@ export namespace Prisma {
     category?: SortOrder
     originalUrl?: SortOrder
     cleanUrl?: SortOrder
+    kieTaskId?: SortOrder
+    kieError?: SortOrder
     status?: SortOrder
     retryCount?: SortOrder
     userId?: SortOrder
@@ -11068,6 +11124,8 @@ export namespace Prisma {
     category?: SortOrder
     originalUrl?: SortOrder
     cleanUrl?: SortOrder
+    kieTaskId?: SortOrder
+    kieError?: SortOrder
     status?: SortOrder
     retryCount?: SortOrder
     userId?: SortOrder
@@ -11842,6 +11900,8 @@ export namespace Prisma {
     category: $Enums.AssetCategory
     originalUrl: string
     cleanUrl?: string | null
+    kieTaskId?: string | null
+    kieError?: string | null
     status?: $Enums.AssetsStatus
     retryCount?: number
     createdAt?: Date | string
@@ -11855,6 +11915,8 @@ export namespace Prisma {
     category: $Enums.AssetCategory
     originalUrl: string
     cleanUrl?: string | null
+    kieTaskId?: string | null
+    kieError?: string | null
     status?: $Enums.AssetsStatus
     retryCount?: number
     createdAt?: Date | string
@@ -12019,6 +12081,8 @@ export namespace Prisma {
     category?: EnumAssetCategoryFilter<"Asset"> | $Enums.AssetCategory
     originalUrl?: StringFilter<"Asset"> | string
     cleanUrl?: StringNullableFilter<"Asset"> | string | null
+    kieTaskId?: StringNullableFilter<"Asset"> | string | null
+    kieError?: StringNullableFilter<"Asset"> | string | null
     status?: EnumAssetsStatusFilter<"Asset"> | $Enums.AssetsStatus
     retryCount?: IntFilter<"Asset"> | number
     userId?: StringFilter<"Asset"> | string
@@ -12363,6 +12427,8 @@ export namespace Prisma {
     category: $Enums.AssetCategory
     originalUrl: string
     cleanUrl?: string | null
+    kieTaskId?: string | null
+    kieError?: string | null
     status?: $Enums.AssetsStatus
     retryCount?: number
     createdAt?: Date | string
@@ -12502,6 +12568,8 @@ export namespace Prisma {
     category?: EnumAssetCategoryFieldUpdateOperationsInput | $Enums.AssetCategory
     originalUrl?: StringFieldUpdateOperationsInput | string
     cleanUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    kieTaskId?: NullableStringFieldUpdateOperationsInput | string | null
+    kieError?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetsStatusFieldUpdateOperationsInput | $Enums.AssetsStatus
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12515,6 +12583,8 @@ export namespace Prisma {
     category?: EnumAssetCategoryFieldUpdateOperationsInput | $Enums.AssetCategory
     originalUrl?: StringFieldUpdateOperationsInput | string
     cleanUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    kieTaskId?: NullableStringFieldUpdateOperationsInput | string | null
+    kieError?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetsStatusFieldUpdateOperationsInput | $Enums.AssetsStatus
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12528,6 +12598,8 @@ export namespace Prisma {
     category?: EnumAssetCategoryFieldUpdateOperationsInput | $Enums.AssetCategory
     originalUrl?: StringFieldUpdateOperationsInput | string
     cleanUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    kieTaskId?: NullableStringFieldUpdateOperationsInput | string | null
+    kieError?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetsStatusFieldUpdateOperationsInput | $Enums.AssetsStatus
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
