@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   Settings,
 } from "lucide-react";
+import Image from "next/image";
 
 import {
   Breadcrumb,
@@ -93,9 +94,11 @@ const SidebarLogo = ({ logo }: { logo: SidebarData["logo"] }) => {
       <SidebarMenuItem>
         <SidebarMenuButton size="lg">
           <div className="flex aspect-square size-8 items-center justify-center rounded-sm bg-primary">
-            <img
+            <Image
               src={logo.src}
               alt={logo.alt}
+              width={24}
+              height={24}
               className="size-6 text-primary-foreground invert dark:invert-0"
             />
           </div>

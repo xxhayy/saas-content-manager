@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import type { ComponentType, SVGProps } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { 
   ArrowLeft, 
@@ -21,7 +23,9 @@ import { toast } from "sonner";
 
 type AssetCategory = "FURNITURE" | "COMMERCE_PRODUCT" | "AVATAR";
 
-const categories: { id: AssetCategory; label: string; icon: any; description: string }[] = [
+type IconComponent = ComponentType<SVGProps<SVGSVGElement>>;
+
+const categories: { id: AssetCategory; label: string; icon: IconComponent; description: string }[] = [
   { 
     id: "FURNITURE", 
     label: "Furniture", 
@@ -63,7 +67,13 @@ export default function NewAssetPage() {
       try {
         const authRes = await fetch("/api/upload-auth");
         if (!authRes.ok) return;
-        const data = await authRes.json();
+        const data = (await authRes.json()) as {
+          token: string;
+          expire: number;
+          signature: string;
+          publicKey: string;
+          urlEndpoint: string;
+        };
         setCachedAuth(data);
       } catch (error) {
         console.error("Pre-fetch error:", error);
@@ -98,23 +108,31 @@ export default function NewAssetPage() {
     setIsUploading(true);
 
     try {
+      type AuthData = {
+        token: string;
+        expire: number;
+        signature: string;
+        publicKey: string;
+        urlEndpoint: string;
+      };
+
       let firstAuthData = cachedAuth;
       const now = Math.floor(Date.now() / 1000);
 
       if (!firstAuthData || firstAuthData.expire < now + 60) {
         const authRes = await fetch("/api/upload-auth");
         if (!authRes.ok) throw new Error("Failed to authenticate with ImageKit");
-        firstAuthData = await authRes.json();
+        firstAuthData = (await authRes.json()) as AuthData;
         setCachedAuth(firstAuthData);
       }
 
       const uploadPromises = files.map(async (file, index) => {
-        let currentAuthData = index === 0 ? firstAuthData : null;
+        let currentAuthData: AuthData | null = index === 0 ? firstAuthData : null;
 
         if (index > 0) {
           const authRes = await fetch("/api/upload-auth");
           if (!authRes.ok) throw new Error(`Auth failed for file ${index + 1}`);
-          currentAuthData = await authRes.json();
+          currentAuthData = (await authRes.json()) as AuthData;
         }
 
         if (!currentAuthData) throw new Error("Auth data lost during upload");
@@ -140,8 +158,8 @@ export default function NewAssetPage() {
       });
 
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || "Server upload failed");
+        const errorData = (await res.json()) as { error?: string };
+        throw new Error(errorData.error ?? "Server upload failed");
       }
 
       toast.success(`${files.length} asset(s) submitted for processing!`);
@@ -311,10 +329,12 @@ export default function NewAssetPage() {
                       key={src}
                       className="group relative aspect-square overflow-hidden rounded-xl border border-border/50 bg-muted"
                     >
-                      <img
+                      <Image
                         src={src}
                         alt={`Preview ${String(i + 1)}`}
-                        className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                        fill
+                        className="object-cover transition-transform group-hover:scale-105"
+                        unoptimized
                       />
                       <button
                         type="button"

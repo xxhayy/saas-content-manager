@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 import { headers } from "next/headers";
 import { auth } from "@/server/better-auth/config";
 import { db } from "@/server/db";

@@ -6,14 +6,11 @@ import {
   ArrowRight, 
   ImageIcon, 
   Clock, 
-  CheckCircle2, 
-  AlertCircle, 
   Sparkles,
   TrendingUp,
   Folder,
   LayoutGrid,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Asset } from "@/components/assets/asset-card";
 
@@ -39,7 +36,7 @@ export default function DashboardPage() {
       try {
         const res = await fetch("/api/assets/recent");
         if (res.ok) {
-          const data = await res.json();
+          const data = (await res.json()) as { assets: Asset[] };
           setRecentAssets(data.assets);
         }
       } catch (err) {

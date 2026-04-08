@@ -16,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import React, { useState } from "react";
+import type { ComponentType, SVGProps } from "react";
 
 // Using the exact types coming from our Prisma schema
 type AssetsStatus = "PROCESSING" | "COMPLETED" | "FAILED";
@@ -32,7 +33,9 @@ export interface Asset {
   retryCount: number;
 }
 
-const categoryIcons: Record<AssetCategory, any> = {
+type IconComponent = ComponentType<SVGProps<SVGSVGElement>>;
+
+const categoryIcons: Record<AssetCategory, IconComponent> = {
   FURNITURE: Armchair,
   COMMERCE_PRODUCT: ShoppingBag,
   AVATAR: UserCircle,
@@ -70,7 +73,7 @@ export function AssetCard({ asset }: { asset: Asset }) {
       toast.success("Asset renamed");
       setIsEditing(false);
       router.refresh();
-    } catch (error) {
+    } catch (_err) {
       toast.error("Error renaming asset");
     } finally {
       setIsUpdating(false);
@@ -89,7 +92,7 @@ export function AssetCard({ asset }: { asset: Asset }) {
       
       toast.success("Asset deleted");
       router.refresh();
-    } catch (error) {
+    } catch (_err) {
       toast.error("Error deleting asset");
     }
   };

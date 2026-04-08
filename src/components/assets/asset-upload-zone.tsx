@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import Image from "next/image";
 import { UploadCloud, X, Loader2 } from "lucide-react";
 import { upload } from "@imagekit/next";
 
@@ -157,8 +158,8 @@ export function AssetUploadZone({ onUploadComplete }: UploadZoneProps) {
 
            if (!res.ok) {
         // Parse the exact error from the backend route
-        const errorData = await res.json();
-        throw new Error(`Server Error: ${errorData.error} (Status: ${res.status})`);
+        const errorData = (await res.json()) as { error?: string };
+        throw new Error(`Server Error: ${errorData.error ?? "Unknown error"} (Status: ${res.status})`);
       }
 
 
@@ -260,11 +261,15 @@ export function AssetUploadZone({ onUploadComplete }: UploadZoneProps) {
                   key={src}
                   className="group relative aspect-square overflow-hidden rounded-md border bg-muted"
                 >
-                  <img
-                    src={src}
-                    alt={`Preview ${String(i + 1)}`}
-                    className="h-full w-full object-cover"
-                  />
+                  <div className="relative h-full w-full">
+                    <Image
+                      src={src}
+                      alt={`Preview ${String(i + 1)}`}
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                  </div>
                   <button
                     type="button"
                     onClick={(e) => {

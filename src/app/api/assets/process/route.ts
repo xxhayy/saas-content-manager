@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 import { env } from "@/env";
 import { db } from "@/server/db";
 import { submitTask, pollTask, CATEGORY_PROMPTS } from "@/server/kie-ai";
