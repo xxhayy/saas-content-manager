@@ -225,15 +225,49 @@ export default function NewAssetPage() {
             <section className="space-y-6">
               <div className="flex items-center gap-3">
                 <div className="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-bold shadow-lg shadow-primary/20">2</div>
-                <h2 className="text-xl font-semibold text-foreground">Upload Assets</h2>
+                <h2 className="text-xl font-semibold text-foreground">Select Source & Upload</h2>
               </div>
 
-              {/* Upload Zone */}
+              {/* Source Selection Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div
+                  className="group relative flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-primary bg-primary/5 ring-4 ring-primary/10 transition-all duration-300 backdrop-blur-sm"
+                >
+                  <div className="flex size-14 items-center justify-center rounded-full bg-primary/20 mb-4">
+                    <Upload className="size-7 text-primary" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-base font-bold text-foreground">Local Files</p>
+                    <p className="text-sm text-muted-foreground">Upload from your computer</p>
+                  </div>
+                  <div className="absolute top-4 right-4 text-primary animate-in zoom-in duration-300">
+                    <CheckCircle2 className="size-5 fill-primary text-white" />
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className="group relative flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-border bg-card/40 hover:border-[#4285F4]/50 hover:bg-[#4285F4]/5 transition-all duration-300 backdrop-blur-sm"
+                  onClick={() => toast.info("Google Drive Integration: Google Cloud Project required for production.")}
+                >
+                  <div className="flex size-14 items-center justify-center rounded-full bg-[#4285F4]/10 mb-4 group-hover:bg-[#4285F4]/20 transition-colors">
+                    <svg viewBox="0 0 24 24" className="size-7 fill-[#4285F4]" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12.532 5.034l4.51 7.823-4.51 7.822h-9l4.51-7.822zM21.522 17.856l-4.507 2.822-4.483-7.822 4.507-7.821 4.483 7.821zM11.66 3.655l4.507 7.822-4.507 7.822-4.507-7.822z" />
+                    </svg>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-base font-bold text-foreground group-hover:text-[#4285F4] transition-colors">Google Drive</p>
+                    <p className="text-sm text-muted-foreground">Select from your Drive</p>
+                  </div>
+                </button>
+              </div>
+
+              {/* Upload Zone (For Local Selection) */}
               <div
-                className={`relative rounded-2xl border-2 border-dashed p-12 text-center transition-all ${
+                className={`relative rounded-2xl border-2 border-dashed p-10 text-center transition-all ${
                   isDragging
                     ? "border-primary bg-primary/5 ring-4 ring-primary/10"
-                    : "border-border bg-card/40 hover:border-primary/50 hover:bg-card/80 backdrop-blur-sm"
+                    : "border-border bg-muted/20 hover:border-primary/50 hover:bg-card/80 backdrop-blur-sm"
                 }`}
                 onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                 onDragLeave={() => setIsDragging(false)}
@@ -254,21 +288,18 @@ export default function NewAssetPage() {
                     input.click();
                 }}
               >
-                <div className="flex flex-col items-center gap-4 cursor-pointer">
-                  <div className="flex size-14 items-center justify-center rounded-full bg-muted">
-                    <Upload className="size-7 text-muted-foreground group-hover:text-primary transition-colors" />
+                <div className="flex flex-col items-center gap-3 cursor-pointer">
+                  <div className="flex size-12 items-center justify-center rounded-xl bg-muted group-hover:bg-primary/10 transition-colors">
+                    <Upload className="size-6 text-muted-foreground group-hover:text-primary transition-colors" />
                   </div>
                   <div className="space-y-1">
-                    <p className="text-base font-medium text-foreground">
+                    <p className="text-sm font-medium text-foreground">
                       Click to upload or drag and drop
                     </p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       PNG, JPG, or WebP (Max 10 images)
                     </p>
                   </div>
-                  <Button type="button" variant="outline" className="mt-2 rounded-xl">
-                    Select Files
-                  </Button>
                 </div>
               </div>
 

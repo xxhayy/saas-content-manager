@@ -57,6 +57,11 @@ const navItems: NavItem[] = [
     exact: true,
   },
   {
+    title: "Gallery",
+    url: "/dashboard/gallery",
+    icon: LayoutGrid
+  },
+  {
     title: "Projects",
     url: "/dashboard/projects",
     icon: Folder
@@ -81,11 +86,7 @@ const navItems: NavItem[] = [
       },
     ],
   },
-  {
-    title: "Gallery",
-    url: "/dashboard/gallery",
-    icon: LayoutGrid
-  },
+  
 ]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
