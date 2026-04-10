@@ -21,6 +21,7 @@ export const env = createEnv({
     IMAGEKIT_PRIVATE_KEY: z.string(),
     INTERNAL_API_SECRET: z.string(),
     KIE_AI_API_KEY: z.string(),
+    KIE_WEBHOOK_SECRET: z.string(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -32,7 +33,10 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
-    // NEXT_PUBLIC_CLIENTVAR: z.string(),
+    NEXT_PUBLIC_APP_URL: z.string().url(),
+    NEXT_PUBLIC_GOOGLE_DRIVE_API_KEY: z.string(),
+    NEXT_PUBLIC_GOOGLE_DRIVE_CLIENT_ID: z.string(),
+    NEXT_PUBLIC_GOOGLE_DRIVE_APP_ID: z.string(),
   },
 
   /**
@@ -53,6 +57,11 @@ export const env = createEnv({
     IMAGEKIT_PRIVATE_KEY: process.env.IMAGEKIT_PRIVATE_KEY,
     INTERNAL_API_SECRET: process.env.INTERNAL_API_SECRET,
     KIE_AI_API_KEY: process.env.KIE_AI_API_KEY,
+    KIE_WEBHOOK_SECRET: process.env.KIE_WEBHOOK_SECRET,
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+    NEXT_PUBLIC_GOOGLE_DRIVE_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_KEY,
+    NEXT_PUBLIC_GOOGLE_DRIVE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_DRIVE_CLIENT_ID,
+    NEXT_PUBLIC_GOOGLE_DRIVE_APP_ID: process.env.NEXT_PUBLIC_GOOGLE_DRIVE_APP_ID,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

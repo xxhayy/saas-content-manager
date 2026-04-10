@@ -97,7 +97,7 @@ export function AssetCard({ asset }: { asset: Asset }) {
     }
   };
 
-  const canDelete = isCompleted || isFailed;
+  const canDelete = isCompleted || isFailed || isProcessing;
 
   // Pick the image to show. If clean is ready, show it. Otherwise show the blurry original.
   const displayImage = asset.cleanUrl ?? asset.originalUrl;
@@ -139,6 +139,7 @@ export function AssetCard({ asset }: { asset: Asset }) {
               >
                 <Trash className="size-4 mr-2" />
                 {isFailed && "Delete Failed Asset"}
+                {isProcessing && "Cancel & Delete"}
               </Button>
             </div>
           </div>

@@ -35,32 +35,6 @@ export function AssetUploadZone({ onUploadComplete }: UploadZoneProps) {
   const [previews, setPreviews] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [cachedAuth, setCachedAuth] = useState<{
-    token: string;
-    expire: number;
-    signature: string;
-    publicKey: string;
-    urlEndpoint: string;
-  } | null>(null);
-
-  // Pre-fetch auth params when dialog opens to eliminate latency
-  const preFetchAuth = useCallback(async () => {
-    try {
-      const authRes = await fetch("/api/upload-auth");
-      if (!authRes.ok) return;
-      const data = (await authRes.json()) as {
-        token: string;
-        expire: number;
-        signature: string;
-        publicKey: string;
-        urlEndpoint: string;
-      };
-      setCachedAuth(data);
-    } catch (error) {
-       console.error("Pre-fetch error:", error);
-    }
-  }, []);
-
 
   const handleFiles = useCallback((newFiles: File[]) => {
     const imageFiles = newFiles.filter((f) => f.type.startsWith("image/"));
@@ -106,46 +80,29 @@ export function AssetUploadZone({ onUploadComplete }: UploadZoneProps) {
     setIsUploading(true);
 
     try {
-      // Step 1: Pre-fetch or refresh auth for the first file
-      let firstAuthData = cachedAuth;
-      const now = Math.floor(Date.now() / 1000);
-
-      if (!firstAuthData || firstAuthData.expire < now + 60) {
+      const uploadPromises = files.map(async (file) => {
         const authRes = await fetch("/api/upload-auth");
-        if (!authRes.ok) throw new Error("Failed to authenticate with ImageKit");
-        firstAuthData = (await authRes.json()) as typeof cachedAuth & { urlEndpoint: string };
-        setCachedAuth(firstAuthData);
-      }
-
-      // Step 2: Upload each image to ImageKit with a UNIQUE token
-      const uploadPromises = files.map(async (file, index) => {
-        // For the first file, use the pre-fetched / cached auth
-        // For subsequent files, fetch a fresh token to avoid 'token used before' error
-        let currentAuthData = index === 0 ? firstAuthData : null;
-
-        if (index > 0) {
-          const authRes = await fetch("/api/upload-auth");
-          if (!authRes.ok) throw new Error(`Auth failed for file ${index + 1}`);
-          currentAuthData = (await authRes.json()) as typeof cachedAuth & { urlEndpoint: string };
-        }
-
-        if (!currentAuthData) throw new Error("Auth data lost during upload");
+        if (!authRes.ok) throw new Error(`Auth failed for file ${file.name}`);
+        const authData = (await authRes.json()) as {
+          token: string;
+          expire: number;
+          signature: string;
+          publicKey: string;
+          urlEndpoint: string;
+        };
 
         const result = await upload({
           file,
           fileName: file.name,
           folder: "/assets/originals",
-          publicKey: currentAuthData.publicKey,
-          signature: currentAuthData.signature,
-          token: currentAuthData.token,
-          expire: currentAuthData.expire,
+          publicKey: authData.publicKey,
+          signature: authData.signature,
+          token: authData.token,
+          expire: authData.expire,
         });
 
         return result.url;
       });
-
-
-
 
       const originalUrls = await Promise.all(uploadPromises);
 
@@ -181,9 +138,7 @@ export function AssetUploadZone({ onUploadComplete }: UploadZoneProps) {
       open={open}
       onOpenChange={(isOpen) => {
         setOpen(isOpen);
-        if (isOpen) {
-            void preFetchAuth();
-        } else {
+        if (!isOpen) {
             resetState();
         }
       }}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import type { ComponentType, SVGProps } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -20,6 +20,7 @@ import { upload } from "@imagekit/next";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import useDrivePicker from "react-google-drive-picker";
 
 type AssetCategory = "FURNITURE" | "COMMERCE_PRODUCT" | "AVATAR";
 
@@ -53,34 +54,13 @@ export default function NewAssetPage() {
   const [previews, setPreviews] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [cachedAuth, setCachedAuth] = useState<{
-    token: string;
-    expire: number;
-    signature: string;
-    publicKey: string;
-    urlEndpoint: string;
-  } | null>(null);
 
-  // Pre-fetch auth params to eliminate latency
+  const [openPicker, authResponse] = useDrivePicker();
+  const authResponseRef = useRef(authResponse);
+
   useEffect(() => {
-    const preFetchAuth = async () => {
-      try {
-        const authRes = await fetch("/api/upload-auth");
-        if (!authRes.ok) return;
-        const data = (await authRes.json()) as {
-          token: string;
-          expire: number;
-          signature: string;
-          publicKey: string;
-          urlEndpoint: string;
-        };
-        setCachedAuth(data);
-      } catch (error) {
-        console.error("Pre-fetch error:", error);
-      }
-    };
-    void preFetchAuth();
-  }, []);
+    authResponseRef.current = authResponse;
+  }, [authResponse]);
 
   const handleFiles = useCallback((newFiles: File[]) => {
     const imageFiles = newFiles.filter((f) => f.type.startsWith("image/"));
@@ -102,6 +82,62 @@ export default function NewAssetPage() {
     setPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const handleDrivePicker = () => {
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_DRIVE_CLIENT_ID;
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_KEY;
+    const appId = process.env.NEXT_PUBLIC_GOOGLE_DRIVE_APP_ID;
+
+    if (!clientId || !apiKey || !appId) {
+      toast.error("Google Drive API keys are missing in .env");
+      return;
+    }
+
+    openPicker({
+      clientId: clientId,
+      developerKey: apiKey,
+      appId: appId,
+      viewId: "DOCS",
+      showUploadView: true,
+      showUploadFolders: true,
+      supportDrives: true,
+      multiselect: true,
+      callbackFunction: async (data: any) => {
+        if (data.action === "picked") {
+          setIsUploading(true);
+          const loadToast = toast.loading("Downloading files from Google Drive...");
+          
+          try {
+             // Try to get token from state or gapi
+             const token = authResponseRef.current?.access_token || (window as any).gapi?.client?.getToken()?.access_token || (window as any).gapi?.auth?.getToken()?.access_token;
+             if (!token) throw new Error("Could not authenticate with Google Drive");
+
+             const downloadedFiles = await Promise.all(
+               data.docs.map(async (doc: any) => {
+                 const res = await fetch(`https://www.googleapis.com/drive/v3/files/${doc.id}?alt=media`, {
+                   headers: { Authorization: `Bearer ${token}` }
+                 });
+                 if (!res.ok) throw new Error(`Failed to fetch ${doc.name}`);
+                 const blob = await res.blob();
+                 const sanitizedName = doc.name.replace(/\.[^/.]+$/, "");
+                 return new File([blob], `${sanitizedName}.jpg`, { type: doc.mimeType });
+               })
+             );
+             
+             handleFiles(downloadedFiles);
+             toast.dismiss(loadToast);
+             toast.success(`Successfully imported ${downloadedFiles.length} file(s)`);
+          } catch (e) {
+             console.error("Drive import error:", e);
+             toast.dismiss(loadToast);
+             toast.error("Failed to import from Google Drive");
+          } finally {
+             setIsUploading(false);
+          }
+        }
+      },
+    });
+  };
+
   const handleUpload = async () => {
     if (!selectedCategory || files.length === 0) return;
 
@@ -116,35 +152,19 @@ export default function NewAssetPage() {
         urlEndpoint: string;
       };
 
-      let firstAuthData = cachedAuth;
-      const now = Math.floor(Date.now() / 1000);
-
-      if (!firstAuthData || firstAuthData.expire < now + 60) {
+      const uploadPromises = files.map(async (file) => {
         const authRes = await fetch("/api/upload-auth");
-        if (!authRes.ok) throw new Error("Failed to authenticate with ImageKit");
-        firstAuthData = (await authRes.json()) as AuthData;
-        setCachedAuth(firstAuthData);
-      }
-
-      const uploadPromises = files.map(async (file, index) => {
-        let currentAuthData: AuthData | null = index === 0 ? firstAuthData : null;
-
-        if (index > 0) {
-          const authRes = await fetch("/api/upload-auth");
-          if (!authRes.ok) throw new Error(`Auth failed for file ${index + 1}`);
-          currentAuthData = (await authRes.json()) as AuthData;
-        }
-
-        if (!currentAuthData) throw new Error("Auth data lost during upload");
+        if (!authRes.ok) throw new Error(`Auth failed for file ${file.name}`);
+        const authData = (await authRes.json()) as AuthData;
 
         return await upload({
           file,
           fileName: file.name,
           folder: "/assets/originals",
-          publicKey: currentAuthData.publicKey,
-          signature: currentAuthData.signature,
-          token: currentAuthData.token,
-          expire: currentAuthData.expire,
+          publicKey: authData.publicKey,
+          signature: authData.signature,
+          token: authData.token,
+          expire: authData.expire,
         });
       });
 
@@ -266,7 +286,7 @@ export default function NewAssetPage() {
                 <button
                   type="button"
                   className="group relative flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-border bg-card/40 hover:border-[#4285F4]/50 hover:bg-[#4285F4]/5 transition-all duration-300 backdrop-blur-sm"
-                  onClick={() => toast.info("Google Drive Integration: Google Cloud Project required for production.")}
+                  onClick={handleDrivePicker}
                 >
                   <div className="flex size-14 items-center justify-center rounded-full bg-[#4285F4]/10 mb-4 group-hover:bg-[#4285F4]/20 transition-colors">
                     <svg viewBox="0 0 24 24" className="size-7 fill-[#4285F4]" xmlns="http://www.w3.org/2000/svg">
