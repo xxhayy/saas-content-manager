@@ -108,7 +108,17 @@ export default function NewAssetPage() {
           
           try {
              // Try to get token from state or gapi
-             const token = authResponseRef.current?.access_token || (window as any).gapi?.client?.getToken()?.access_token || (window as any).gapi?.auth?.getToken()?.access_token;
+             interface GapiWindow {
+               gapi?: {
+                 client?: { getToken?: () => { access_token?: string } };
+                 auth?: { getToken?: () => { access_token?: string } };
+               };
+             }
+             const gapiWindow = window as GapiWindow;
+             const token =
+               authResponseRef.current?.access_token ??
+               gapiWindow.gapi?.client?.getToken?.()?.access_token ??
+               gapiWindow.gapi?.auth?.getToken?.()?.access_token;
              if (!token) throw new Error("Could not authenticate with Google Drive");
 
              const downloadedFiles = await Promise.all(
