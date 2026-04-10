@@ -1,7 +1,6 @@
 import type { NextRequest } from "next/server";
 import { auth } from "@/server/better-auth/config";
 import { db } from "@/server/db";
-import { env } from "@/env";
 import type { AssetCategory } from "../../../../../generated/prisma";
 import { submitTask, CATEGORY_PROMPTS } from "@/server/kie-ai";
 

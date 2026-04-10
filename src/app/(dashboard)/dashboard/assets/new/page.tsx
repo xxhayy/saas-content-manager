@@ -101,8 +101,8 @@ export default function NewAssetPage() {
       showUploadFolders: true,
       supportDrives: true,
       multiselect: true,
-      callbackFunction: async (data: any) => {
-        if (data.action === "picked") {
+      callbackFunction: async (data: { action: string; docs?: { id: string; name: string; mimeType: string; }[] }) => {
+        if (data.action === "picked" && data.docs) {
           setIsUploading(true);
           const loadToast = toast.loading("Downloading files from Google Drive...");
           
@@ -112,7 +112,7 @@ export default function NewAssetPage() {
              if (!token) throw new Error("Could not authenticate with Google Drive");
 
              const downloadedFiles = await Promise.all(
-               data.docs.map(async (doc: any) => {
+               data.docs.map(async (doc: { id: string; name: string; mimeType: string; }) => {
                  const res = await fetch(`https://www.googleapis.com/drive/v3/files/${doc.id}?alt=media`, {
                    headers: { Authorization: `Bearer ${token}` }
                  });

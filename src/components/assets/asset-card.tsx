@@ -73,7 +73,7 @@ export function AssetCard({ asset }: { asset: Asset }) {
       toast.success("Asset renamed");
       setIsEditing(false);
       router.refresh();
-    } catch (_err) {
+    } catch {
       toast.error("Error renaming asset");
     } finally {
       setIsUpdating(false);
@@ -92,7 +92,7 @@ export function AssetCard({ asset }: { asset: Asset }) {
       
       toast.success("Asset deleted");
       router.refresh();
-    } catch (_err) {
+    } catch {
       toast.error("Error deleting asset");
     }
   };

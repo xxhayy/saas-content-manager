@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 import crypto from "crypto";
 import { env } from "@/env";
 import { db } from "@/server/db";
@@ -8,14 +8,29 @@ export async function POST(req: NextRequest) {
   try {
     const rawBody = await req.text();
     
+    type KieWebhookPayload = {
+      taskId?: string;
+      id?: string;
+      state?: string;
+      resultUrls?: string[];
+      resultJson?: string;
+      failedReason?: string;
+      data?: {
+        taskId?: string;
+        state?: string;
+        resultJson?: string;
+        failedReason?: string;
+      };
+    };
+
     // 1. HMAC Verification (if secret provided)
     const signature = req.headers.get("X-Webhook-Signature");
     const timestamp = req.headers.get("X-Webhook-Timestamp");
     
     if (env.KIE_WEBHOOK_SECRET && signature && timestamp) {
       // Kie webhook signature rule: base64(HMAC-SHA256(taskId + "." + timestamp, webhookHmacKey))
-      const bodyParams = JSON.parse(rawBody);
-      const taskId = bodyParams.taskId || bodyParams.data?.taskId || bodyParams.id;
+      const bodyParams = JSON.parse(rawBody) as KieWebhookPayload;
+      const taskId = bodyParams.taskId ?? bodyParams.data?.taskId ?? bodyParams.id;
       
       const payloadString = `${taskId}.${timestamp}`;
       const expectedSignature = crypto
@@ -32,7 +47,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. Parse the payload
-    const data = JSON.parse(rawBody);
+    const data = JSON.parse(rawBody) as KieWebhookPayload;
     
     // We expect assetId in the query string based on our submission logic
     const assetId = req.nextUrl.searchParams.get("assetId");
@@ -50,7 +65,7 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: "Asset not found" }, { status: 404 });
     }
 
-    const state = data.state || data.data?.state;
+    const state = data.state ?? data.data?.state;
     
     // If the asset is already completed (maybe duplicate webhook), simply return ok
     if (asset.status === "COMPLETED") {
@@ -59,9 +74,9 @@ export async function POST(req: NextRequest) {
     
     if (state === "success") {
       // Parse result URLs
-      const resultJsonStr = data.resultJson || data.data?.resultJson;
-      const resultObj = resultJsonStr ? JSON.parse(resultJsonStr) : {};
-      const imageUrl = resultObj.resultUrls?.[0] || data.resultUrls?.[0]; // Fallbacks just in case
+      const resultJsonStr = data.resultJson ?? data.data?.resultJson;
+      const resultObj = (resultJsonStr ? JSON.parse(resultJsonStr) : {}) as { resultUrls?: string[] };
+      const imageUrl = resultObj.resultUrls?.[0] ?? data.resultUrls?.[0]; // Fallbacks just in case
 
       if (!imageUrl) {
         throw new Error("Success state but no image URL provided by Kie");
@@ -85,7 +100,7 @@ export async function POST(req: NextRequest) {
       console.log(`[Webhook] Asset ${assetId} fully completed!`);
 
     } else if (state === "fail" || state === "failed") {
-      const failedReason = data.failedReason || data.data?.failedReason || "Unknown Kie error";
+      const failedReason = data.failedReason ?? data.data?.failedReason ?? "Unknown Kie error";
       console.error(`[Webhook] Kie processing failed for asset ${assetId}: ${failedReason}`);
       
       await db.asset.update({
