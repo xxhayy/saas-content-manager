@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { auth } from "@/server/better-auth/config";
 import { db } from "@/server/db";
 // Root is 4 levels up from this folder
-import type { AssetCategory } from "../../../../generated/prisma";
+import type { AssetCategory } from "@prisma/client";
 
 export async function GET(req: NextRequest) {
   try {

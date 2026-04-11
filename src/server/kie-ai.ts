@@ -1,5 +1,5 @@
 import { env } from "@/env";
-import type { AssetCategory } from "../../generated/prisma";
+import type { AssetCategory } from "@prisma/client";
 
 // Shape of a kie.ai API JSON response
 interface KieApiResponse {

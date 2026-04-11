@@ -2,7 +2,7 @@ import { after } from "next/server";
 import type { NextRequest } from "next/server";
 import { auth } from "@/server/better-auth/config";
 import { db } from "@/server/db";
-import type { AssetCategory } from "../../../../../generated/prisma";
+import type { AssetCategory } from "@prisma/client";
 import { submitTask, CATEGORY_PROMPTS } from "@/server/kie-ai";
 
 export async function POST(req: NextRequest) {
