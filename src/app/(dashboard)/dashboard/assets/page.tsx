@@ -32,9 +32,13 @@ export default function AssetsPage() {
       const assetsResult = await getUserAssets();
       if (assetsResult.success && assetsResult.assets) {
         setUserAssets(assetsResult.assets as unknown as Asset[]);
+      } else {
+        console.error("Failed to fetch assets via action:", assetsResult.error);
+        toast.error(`Error loading assets: ${assetsResult.error}`);
       }
     } catch (error) {
       console.error("Assets lookup failed:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to load assets");
     } finally {
       if (showLoading) setIsLoading(false);
     }
