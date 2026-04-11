@@ -1,7 +1,3 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import Link from "next/link";
 import { 
   ArrowRight, 
   ImageIcon, 
@@ -11,8 +7,12 @@ import {
   Folder,
   LayoutGrid,
 } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
-import type { Asset } from "@/components/assets/asset-card";
+import Link from "next/link";
+import Image from "next/image";
+import { headers } from "next/headers";
+import { auth } from "@/server/better-auth/config";
+import { db } from "@/server/db";
+import { redirect } from "next/navigation";
 
 const stats = [
   { label: "Total Projects", value: "24", icon: Folder, change: "+3 this week" },
@@ -27,26 +27,19 @@ const statusColors: Record<string, string> = {
   FAILED: "bg-destructive/10 text-destructive border-destructive/20",
 };
 
-export default function DashboardPage() {
-  const [recentAssets, setRecentAssets] = useState<Asset[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export default async function DashboardPage() {
+  const headerPayload = await headers();
+  const session = await auth.api.getSession({ headers: headerPayload });
 
-  useEffect(() => {
-    async function fetchRecent() {
-      try {
-        const res = await fetch("/api/assets/recent");
-        if (res.ok) {
-          const data = (await res.json()) as { assets: Asset[] };
-          setRecentAssets(data.assets);
-        }
-      } catch (err) {
-        console.error("Failed to fetch recent assets", err);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    void fetchRecent();
-  }, []);
+  if (!session?.user?.id) {
+    redirect("/auth/sign-in");
+  }
+
+  const recentAssets = await db.asset.findMany({
+    where: { userId: session.user.id },
+    orderBy: { createdAt: "desc" },
+    take: 5,
+  });
 
   return (
     <div className="space-y-8 max-w-5xl">
@@ -143,17 +136,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="rounded-2xl border border-border/50 bg-card/40 backdrop-blur-sm divide-y divide-border/30 overflow-hidden shadow-sm">
-            {isLoading ? (
-              [1, 2, 3].map((i) => (
-                <div key={i} className="flex items-center gap-4 px-5 py-4">
-                  <Skeleton className="size-10 rounded-xl" />
-                  <div className="space-y-2 flex-1">
-                    <Skeleton className="h-4 w-[140px]" />
-                    <Skeleton className="h-3 w-[80px]" />
-                  </div>
-                </div>
-              ))
-            ) : recentAssets.length === 0 ? (
+            {recentAssets.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-center italic text-muted-foreground/60 p-5">
                 <ImageIcon className="h-10 w-10 mb-3 opacity-20" />
                 <p className="text-sm">No activity recorded yet.</p>
@@ -166,9 +149,11 @@ export default function DashboardPage() {
                 >
                   <div className="relative size-12 shrink-0 overflow-hidden rounded-xl bg-muted border border-border/50 flex items-center justify-center group shadow-sm">
                     {asset.cleanUrl || asset.originalUrl ? (
-                      <img
+                      <Image
                         src={asset.cleanUrl ?? asset.originalUrl}
                         alt={asset.name ?? "Asset"}
+                        width={48}
+                        height={48}
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
                     ) : (
@@ -190,7 +175,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex items-center gap-4 shrink-0 px-2">
                     <span
-                      className={`inline-flex items-center rounded-full border px-3 py-1 text-[10px] font-bold tracking-tight uppercase ${statusColors[asset.status] ?? "bg-muted"}`}
+                      className={`inline-flex items-center rounded-full border px-3 py-1 text-[10px] font-bold tracking-tight uppercase ${statusColors[asset.status as keyof typeof statusColors] ?? "bg-muted"}`}
                     >
                       {asset.status.replace("_", " ")}
                     </span>

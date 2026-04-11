@@ -21,6 +21,13 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import useDrivePicker from "react-google-drive-picker";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 type AssetCategory = "FURNITURE" | "COMMERCE_PRODUCT" | "AVATAR";
 
@@ -52,7 +59,7 @@ export default function NewAssetPage() {
   const [selectedCategory, setSelectedCategory] = useState<AssetCategory | null>(null);
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
-  const [isUploading, setIsUploading] = useState(false);
+  const [uploadStep, setUploadStep] = useState<"IDLE" | "UPLOADING" | "COMPLETE">("IDLE");
   const [isDragging, setIsDragging] = useState(false);
 
   const [openPicker, authResponse] = useDrivePicker();
@@ -103,7 +110,7 @@ export default function NewAssetPage() {
       multiselect: true,
       callbackFunction: async (data: { action: string; docs?: { id: string; name: string; mimeType: string; }[] }) => {
         if (data.action === "picked" && data.docs) {
-          setIsUploading(true);
+          setUploadStep("UPLOADING");
           const loadToast = toast.loading("Downloading files from Google Drive...");
           
           try {
@@ -141,7 +148,7 @@ export default function NewAssetPage() {
              toast.dismiss(loadToast);
              toast.error("Failed to import from Google Drive");
           } finally {
-             setIsUploading(false);
+             setUploadStep("IDLE");
           }
         }
       },
@@ -151,7 +158,7 @@ export default function NewAssetPage() {
   const handleUpload = async () => {
     if (!selectedCategory || files.length === 0) return;
 
-    setIsUploading(true);
+    setUploadStep("UPLOADING");
 
     try {
       type AuthData = {
@@ -188,18 +195,21 @@ export default function NewAssetPage() {
       });
 
       if (!res.ok) {
-        const errorData = (await res.json()) as { error?: string };
-        throw new Error(errorData.error ?? "Server upload failed");
+        let errorMessage = "Server upload failed";
+        try {
+          const errorData = (await res.json()) as { error?: string };
+          errorMessage = errorData.error ?? errorMessage;
+        } catch {
+          // It might be an HTML error page from Next.js (e.g. 500 error)
+        }
+        throw new Error(errorMessage);
       }
 
-      toast.success(`${files.length} asset(s) submitted for processing!`);
-      router.push("/dashboard/assets");
-      router.refresh();
+      setUploadStep("COMPLETE");
     } catch (error) {
       console.error("Upload error:", error);
       toast.error(error instanceof Error ? error.message : "Upload failed. Please try again.");
-    } finally {
-      setIsUploading(false);
+      setUploadStep("IDLE");
     }
   };
 
@@ -391,10 +401,10 @@ export default function NewAssetPage() {
               </Link>
               <Button 
                 onClick={handleUpload}
-                disabled={files.length === 0 || isUploading}
+                disabled={files.length === 0 || uploadStep !== "IDLE"}
                 className="rounded-xl px-8 h-11 bg-primary text-primary-foreground hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
               >
-                {isUploading ? (
+                {uploadStep !== "IDLE" ? (
                     <>
                         <Loader2 className="size-4 animate-spin mr-2" />
                         Uploading...
@@ -416,6 +426,55 @@ export default function NewAssetPage() {
           </div>
         )}
       </div>
+
+      <Dialog open={uploadStep !== "IDLE"} onOpenChange={(open) => {
+        if (!open && uploadStep === "UPLOADING") return;
+        if (!open && uploadStep === "COMPLETE") {
+          setUploadStep("IDLE");
+          router.push("/dashboard/assets");
+          router.refresh();
+        }
+      }}>
+        <DialogContent className="sm:max-w-md [&>button]:hidden outline-none">
+          <DialogHeader className="flex flex-col items-center justify-center space-y-4 pt-6 outline-none">
+            {uploadStep === "UPLOADING" ? (
+              <>
+                <div className="flex size-16 items-center justify-center rounded-full bg-primary/10 mb-2">
+                  <Loader2 className="size-8 animate-spin text-primary" />
+                </div>
+                <DialogTitle className="text-xl">Uploading Files...</DialogTitle>
+                <DialogDescription className="text-center text-base">
+                  Please keep this window open while we securely upload your {files.length ? files.length : ''} asset{files.length !== 1 ? 's' : ''}.
+                </DialogDescription>
+              </>
+            ) : uploadStep === "COMPLETE" ? (
+              <>
+                <div className="flex size-16 items-center justify-center rounded-full bg-green-500/10 mb-2">
+                  <CheckCircle2 className="size-8 text-green-500" />
+                </div>
+                <DialogTitle className="text-xl">Upload Complete!</DialogTitle>
+                <DialogDescription className="text-center text-base">
+                  Images are processing, you may now leave this window.
+                </DialogDescription>
+              </>
+            ) : null}
+          </DialogHeader>
+          {uploadStep === "COMPLETE" && (
+            <div className="flex justify-center mt-6">
+              <Button 
+                onClick={() => {
+                  setUploadStep("IDLE");
+                  router.push("/dashboard/assets");
+                  router.refresh();
+                }}
+                className="min-w-[120px] rounded-xl mb-4"
+              >
+                OK
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

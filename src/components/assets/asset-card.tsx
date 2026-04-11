@@ -41,7 +41,19 @@ const categoryIcons: Record<AssetCategory, IconComponent> = {
   AVATAR: UserCircle,
 };
 
-export function AssetCard({ asset }: { asset: Asset }) {
+interface AssetCardProps {
+  asset: Asset;
+  isSelectMode?: boolean;
+  isSelected?: boolean;
+  onToggleSelect?: (id: string) => void;
+}
+
+export function AssetCard({
+  asset,
+  isSelectMode = false,
+  isSelected = false,
+  onToggleSelect,
+}: AssetCardProps) {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState(asset.name ?? "");
@@ -50,6 +62,9 @@ export function AssetCard({ asset }: { asset: Asset }) {
   const isProcessing = asset.status === "PROCESSING";
   const isFailed = asset.status === "FAILED";
   const isCompleted = asset.status === "COMPLETED";
+
+  // Only completed assets are selectable
+  const isSelectable = isSelectMode && isCompleted;
 
   const Icon = categoryIcons[asset.category];
 
@@ -97,27 +112,53 @@ export function AssetCard({ asset }: { asset: Asset }) {
     }
   };
 
+  const handleCardClick = () => {
+    if (isSelectMode) {
+      if (isSelectable) onToggleSelect?.(asset.id);
+      return;
+    }
+  };
+
   const canDelete = isCompleted || isFailed || isProcessing;
 
   // Pick the image to show. If clean is ready, show it. Otherwise show the blurry original.
   const displayImage = asset.cleanUrl ?? asset.originalUrl;
 
   return (
-    <div className="group relative flex flex-col rounded-2xl border border-border bg-card/40 hover:bg-card/80 hover:border-border/80 transition-all duration-300 overflow-hidden backdrop-blur-sm">
+    <div
+      onClick={handleCardClick}
+      className={[
+        "group relative flex flex-col rounded-2xl border transition-all duration-300 overflow-hidden backdrop-blur-sm",
+        // Select mode cursor
+        isSelectMode
+          ? isSelectable
+            ? "cursor-pointer"
+            : "cursor-not-allowed opacity-50"
+          : "",
+        // Selected background highlight
+        isSelected
+          ? "border-primary bg-primary/15 ring-2 ring-primary/40 shadow-lg shadow-primary/10"
+          : "border-border bg-card/40 hover:bg-card/80 hover:border-border/80",
+      ].join(" ")}
+    >
       {/* Image Container */}
       <div className="aspect-4/3 relative overflow-hidden bg-muted">
         <Image
           src={displayImage}
           alt={asset.name ?? "Processing Asset"}
           fill
-          className={`object-cover transition-all duration-500 group-hover:scale-110 ${
+          className={`object-cover transition-all duration-500 ${
+            isSelectMode ? "" : "group-hover:scale-110"
+          } ${
             isProcessing ? "opacity-30 blur-sm scale-105 animate-pulse-subtle" : ""
-          } ${isFailed ? "grayscale opacity-50" : ""}`}
+          } ${isFailed ? "grayscale opacity-50" : ""} ${
+            isSelected ? "scale-105" : ""
+          }`}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
         />
 
-        {/* Hover Overlay */}
-        {canDelete && (
+        {/* Hover Overlay — only shown when NOT in select mode */}
+        {!isSelectMode && canDelete && (
           <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4 z-20">
             <div className="flex gap-2 w-full">
               {isCompleted && (
@@ -125,7 +166,7 @@ export function AssetCard({ asset }: { asset: Asset }) {
                   size="sm" 
                   variant="secondary" 
                   className="flex-1 bg-white/10 hover:bg-white/20 text-white border-0 backdrop-blur-md cursor-pointer"
-                  onClick={() => window.open(asset.cleanUrl!, "_blank")}
+                  onClick={(e) => { e.stopPropagation(); window.open(asset.cleanUrl!, "_blank"); }}
                 >
                   <Download className="size-4 mr-2" />
                   Download
@@ -134,7 +175,7 @@ export function AssetCard({ asset }: { asset: Asset }) {
               <Button 
                 size="sm" 
                 variant="secondary" 
-                onClick={handleDelete}
+                onClick={(e) => { e.stopPropagation(); void handleDelete(); }}
                 className={`${isCompleted ? "bg-white/10" : "flex-1 bg-destructive/20 hover:bg-destructive/40"} hover:bg-white/20 text-white border-0 backdrop-blur-md px-2 cursor-pointer transition-colors`}
               >
                 <Trash className="size-4 mr-2" />
@@ -171,14 +212,24 @@ export function AssetCard({ asset }: { asset: Asset }) {
             {asset.category.replace("_", " ")}
           </div>
         </div>
+
+        {/* Selected checkmark badge */}
+        {isSelected && (
+          <div className="absolute top-3 right-3 z-30 flex items-center justify-center size-5 rounded-full bg-primary shadow-md animate-in zoom-in duration-150">
+            <svg className="size-3 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+        )}
       </div>
 
       {/* Content */}
       <div className="p-4">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
-            {isEditing ? (
-              <form onSubmit={handleRename}>
+            {/* Suppress rename click when in select mode */}
+            {isEditing && !isSelectMode ? (
+              <form onSubmit={(e) => { void handleRename(e); }}>
                 <Input
                   autoFocus
                   disabled={isUpdating}
@@ -190,9 +241,15 @@ export function AssetCard({ asset }: { asset: Asset }) {
               </form>
             ) : asset.name ? (
               <h3 
-                className="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors cursor-pointer" 
-                title="Click to rename"
-                onClick={() => setIsEditing(true)}
+                className={`text-sm font-medium text-foreground truncate transition-colors ${
+                  isSelectMode ? "" : "group-hover:text-primary cursor-pointer"
+                }`}
+                title={isSelectMode ? undefined : "Click to rename"}
+                onClick={(e) => {
+                  if (isSelectMode) return;
+                  e.stopPropagation();
+                  setIsEditing(true);
+                }}
               >
                 {asset.name}
               </h3>

@@ -1,3 +1,4 @@
+import { after } from "next/server";
 import type { NextRequest } from "next/server";
 import { auth } from "@/server/better-auth/config";
 import { db } from "@/server/db";
@@ -6,7 +7,7 @@ import { submitTask, CATEGORY_PROMPTS } from "@/server/kie-ai";
 
 export async function POST(req: NextRequest) {
   try {
-     const session = await auth.api.getSession({ headers: req.headers });
+    const session = await auth.api.getSession({ headers: req.headers });
 
     if (!session?.user?.id) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
@@ -21,8 +22,8 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: "Missing originalUrls or category" }, { status: 400 });
     }
 
-    if (body.originalUrls.length > 10) {
-      return Response.json({ error: "Maximum 10 images per upload" }, { status: 400 });
+    if (body.originalUrls.length > 20) {
+      return Response.json({ error: "Maximum 20 images per upload" }, { status: 400 });
     }
 
     // Create one Asset record per image, all with status PROCESSING
@@ -41,30 +42,36 @@ export async function POST(req: NextRequest) {
 
     const prompt = CATEGORY_PROMPTS[body.category];
 
-    console.log(`[Upload] Starting submission of ${assets.length} assets to Kie.ai...`);
-    
-    // Submit tasks to Kie.ai immediately in parallel
-    await Promise.all(assets.map(async (asset) => {
-      try {
-        const taskId = await submitTask(asset.originalUrl, prompt, asset.id);
-        if (taskId) {
-          await db.asset.update({
-            where: { id: asset.id },
-            data: { kieTaskId: taskId },
-          });
-        }
-      } catch (err) {
-        console.error(`[Upload] Failed to submit asset ${asset.id} to Kie.ai:`, err);
-        await db.asset.update({
-             where: { id: asset.id },
-             data: { 
-               status: "FAILED", 
-               kieError: err instanceof Error ? err.message : "Failed to submit to Kie.ai API" 
-             }
-        });
-      }
-    }));
+    // Offload Kie.ai task submission to background execution
+    after(async () => {
+      console.log(`[Upload] Starting background submission of ${assets.length} assets to Kie.ai...`);
+      
+      await Promise.all(
+        assets.map(async (asset) => {
+          try {
+            const taskId = await submitTask(asset.originalUrl, prompt, asset.id);
+            if (taskId) {
+              await db.asset.update({
+                where: { id: asset.id },
+                data: { kieTaskId: taskId },
+              });
+            }
+          } catch (err) {
+            console.error(`[Upload] Failed to submit asset ${asset.id} to Kie.ai:`, err);
+            await db.asset.update({
+              where: { id: asset.id },
+              data: {
+                status: "FAILED",
+                kieError: err instanceof Error ? err.message : "Failed to submit to Kie.ai API",
+              },
+            });
+          }
+        })
+      );
+      console.log("[Upload] Background submission to Kie.ai completed.");
+    });
 
+    // Respond immediately so user isn't waiting on Kie.ai API roundtrips
     return Response.json({
       message: "Upload submitted",
       assetIds: assets.map((a) => a.id),
