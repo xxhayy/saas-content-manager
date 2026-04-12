@@ -205,6 +205,9 @@ export default function NewAssetPage() {
         throw new Error(errorMessage);
       }
 
+      const data = (await res.json()) as { assetIds: string[] };
+      localStorage.setItem("pendingBatch", JSON.stringify({ ids: data.assetIds }));
+
       setUploadStep("COMPLETE");
     } catch (error) {
       console.error("Upload error:", error);

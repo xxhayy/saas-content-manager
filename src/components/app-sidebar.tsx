@@ -33,6 +33,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
 
 interface NavSubItem {
@@ -91,6 +92,11 @@ const navItems: NavItem[] = [
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
+  const { isMobile, setOpenMobile } = useSidebar()
+
+  const handleNavClick = () => {
+    if (isMobile) setOpenMobile(false)
+  }
   
   const isActive = (url: string, exact = false) => {
     if (url === "#") return false
@@ -156,11 +162,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           <SidebarMenuSub>
                             {item.items.map((subItem: NavSubItem) => (
                               <SidebarMenuSubItem key={subItem.title}>
-                                <SidebarMenuSubButton 
-                                  asChild 
+                                <SidebarMenuSubButton
+                                  asChild
                                   isActive={pathname === subItem.url}
                                 >
-                                  <Link href={subItem.url}>
+                                  <Link href={subItem.url} onClick={handleNavClick}>
                                     <span>{subItem.title}</span>
                                   </Link>
                                 </SidebarMenuSubButton>
@@ -176,14 +182,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 // If it's a standard link (like Home, Projects, Assets)
                 return (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton 
-                      size="sm" 
-                      className="text-sm font-medium" 
-                      asChild 
+                    <SidebarMenuButton
+                      size="sm"
+                      className="text-sm font-medium"
+                      asChild
                       tooltip={item.title}
                       isActive={isActive(item.url, item.exact)}
                     >
-                      <Link href={item.url}>
+                      <Link href={item.url} onClick={handleNavClick}>
                         {item.icon && <item.icon className="size-4" />}
                         <span>{item.title}</span>
                       </Link>

@@ -19,7 +19,7 @@ interface KieApiResponse {
 // Prompts optimized for white-background extraction and detail retention
 export const CATEGORY_PROMPTS: Record<AssetCategory, string> = {
   FURNITURE: "Isolate and generate a professional studio photograph of the furniture item circled in the reference image. The furniture piece must be perfectly centered and isolated against a pure, plain white background. Shot in the style of a high-end e-commerce product catalog. Ultra-realistic, photorealistic, 8k resolution, sharp focus, capturing highly detailed material textures. Soft, even studio lighting with a subtle, natural drop shadow grounding the object. Maintain a strict 1:1 aspect ratio and ensure consistent scale and perspective.",
-  COMMERCE_PRODUCT: "Studio photography of this watch, perfect pure white background, soft studio lighting, sharp focus, 8k resolution and ultra-realism, commercial product photography with a front facing view as if though it were a part of a catalog of a website. Do not add any extra elements to the image.",
+  COMMERCE_PRODUCT: "Studio photography of this watch, perfect pure white background, soft studio lighting, sharp focus, 8k resolution and ultra-realism, commercial product photography with a front facing view as if it were part of a catalog or website. The watch should be centered in the frame, occupying approximately 70% of the image height, positioned in the middle of the square canvas with equal spacing on all sides. Do not add any extra elements to the image.",
   AVATAR: "Studio portrait on a perfect pure white background, soft lighting, professional portrait photography, ultra detailed",
 };
 
@@ -45,7 +45,7 @@ export async function submitTask(imageUrl: string, prompt: string, assetId: stri
     body: JSON.stringify({
       callBackUrl: webhookUrl,
       webhook: webhookUrl, // Keeping this just as a safety net 
-      model: "nano-banana-pro",
+      model: "nano-banana-2",
       input: {
         prompt: prompt,
         image_input: [imageUrl],
