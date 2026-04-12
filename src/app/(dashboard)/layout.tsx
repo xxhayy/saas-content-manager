@@ -8,7 +8,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
+import { MobileSidebarWrapper } from "@/components/mobile-sidebar-wrapper";
 import { Separator } from "@/components/ui/separator";
 import {
   Breadcrumb,
@@ -28,9 +28,9 @@ export default function RootLayout({
   return (
     <Providers>
       <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset className="bg-sidebar p-1.5 md:p-2 overflow-hidden flex flex-col h-screen">
-          <div className="flex flex-1 flex-col overflow-hidden bg-background border border-border/40 rounded-xl shadow-sm relative">
+        <MobileSidebarWrapper />
+        <SidebarInset className="bg-sidebar p-0 md:p-2 overflow-hidden flex flex-col h-screen w-full">
+          <div className="flex flex-1 flex-col overflow-hidden bg-background md:border md:border-border/40 md:rounded-xl md:shadow-sm relative">
             <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border/40 bg-background/60 backdrop-blur-xl sticky top-0 z-10 px-4">
               <div className="flex items-center h-full">
                 <SidebarTrigger className="-ml-1 h-8 w-8 transition-colors" />
@@ -45,7 +45,7 @@ export default function RootLayout({
                 </BreadcrumbList>
               </Breadcrumb>
             </header>
-            <main className="flex-1 overflow-y-auto bg-linear-to-br from-background to-muted/20 p-6">
+            <main className="flex-1 overflow-y-auto overflow-x-hidden bg-linear-to-br from-background to-muted/20 pt-0 px-4 pb-4 md:p-6 w-full">
               {children}
             </main>
           </div>

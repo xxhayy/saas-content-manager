@@ -139,14 +139,21 @@ function AssetCardInner({
     }
   };
 
-  const handleDownload = () => {
-    if (asset.cleanUrl) {
+  const handleDownload = async () => {
+    if (!asset.cleanUrl) return;
+    try {
+      const response = await fetch(asset.cleanUrl);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
-      link.href = asset.cleanUrl;
+      link.href = url;
       link.download = asset.name ?? "asset";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch {
+      toast.error(`Failed to download ${asset.name ?? asset.id}`);
     }
   };
 
@@ -207,8 +214,8 @@ function AssetCardInner({
           </div>
         )}
 
-        {/* Category Badge */}
-        <div className="absolute top-3 left-3">
+        {/* Category Badge — hidden on mobile */}
+        <div className="absolute top-3 left-3 hidden md:block">
           <div className="flex items-center gap-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10 px-2.5 py-1 text-[10px] font-medium text-white uppercase tracking-wider">
             <Icon className="size-3" />
             {asset.category.replace("_", " ")}
@@ -225,8 +232,8 @@ function AssetCardInner({
         )}
       </div>
 
-      {/* Content */}
-      <div className="p-4">
+      {/* Content — hidden on mobile */}
+      <div className="hidden md:block p-4">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
             {/* Suppress rename click when in select mode */}
@@ -279,7 +286,7 @@ function AssetCardInner({
                   <DropdownMenuItem
                     onClick={(e) => {
                       e.stopPropagation();
-                      window.open(asset.cleanUrl!, "_blank");
+                      void handleDownload();
                     }}
                   >
                     <Download className="size-4 mr-2" />
@@ -318,19 +325,33 @@ function AssetCardInner({
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 90vw"
           />
         </div>
-        <DialogFooter className="rounded-b-xl">
+        <DialogFooter className="mx-0 mb-0 gap-3 bg-muted/30 p-4 flex-row justify-between items-center">
           <Button
-            variant="outline"
-            onClick={() => setIsDialogOpen(false)}
+            variant="destructive"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsDialogOpen(false);
+              void handleDelete();
+            }}
+            className="gap-2"
           >
-            Close
+            <Trash className="size-4" />
+            Delete
           </Button>
-          {isCompleted && asset.cleanUrl && (
-            <Button onClick={handleDownload} className="gap-2">
-              <Download className="size-4" />
-              Download
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setIsDialogOpen(false)}
+            >
+              Close
             </Button>
-          )}
+            {isCompleted && asset.cleanUrl && (
+              <Button onClick={handleDownload} className="gap-2">
+                <Download className="size-4" />
+                Download
+              </Button>
+            )}
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

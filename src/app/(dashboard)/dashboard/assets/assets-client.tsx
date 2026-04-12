@@ -3,6 +3,22 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import Link from "next/link";
 import { Plus, Search, Loader2, Download, CheckSquare, X, PartyPopper } from "lucide-react";
+import { zipSync } from "fflate";
+
+const MIME_TO_EXT: Record<string, string> = {
+  "image/png": ".png",
+  "image/jpeg": ".jpg",
+  "image/webp": ".webp",
+  "image/gif": ".gif",
+  "image/avif": ".avif",
+  "image/tiff": ".tiff",
+};
+
+function getExtFromContentType(contentType: string | null): string {
+  if (!contentType) return ".png";
+  const mime = contentType.split(";")[0]?.trim() ?? "";
+  return MIME_TO_EXT[mime] ?? ".png";
+}
 import { AssetCard } from "@/components/assets/asset-card";
 import type { Asset } from "@/components/assets/asset-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -190,8 +206,9 @@ export function AssetsClient({
 
   const handleBatchDownload = useCallback(async () => {
     if (batchAssets.length === 0) return;
-    toast.info(`Downloading ${batchAssets.length} file(s)...`);
-    for (const asset of batchAssets) {
+
+    if (batchAssets.length === 1) {
+      const asset = batchAssets[0]!;
       try {
         const response = await fetch(asset.cleanUrl!);
         const blob = await response.blob();
@@ -203,10 +220,42 @@ export function AssetsClient({
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        await new Promise((r) => setTimeout(r, 300));
       } catch {
         toast.error(`Failed to download ${asset.name ?? asset.id}`);
       }
+      dismissBatch();
+      return;
+    }
+
+    toast.info(`Preparing ZIP of ${batchAssets.length} files...`);
+    try {
+      const entries: Record<string, Uint8Array> = {};
+      const nameCount: Record<string, number> = {};
+
+      await Promise.all(
+        batchAssets.map(async (asset) => {
+          const response = await fetch(asset.cleanUrl!);
+          const buffer = await response.arrayBuffer();
+          const ext = getExtFromContentType(response.headers.get("content-type"));
+          const baseName = asset.name ?? `asset-${asset.id}`;
+          nameCount[baseName] = (nameCount[baseName] ?? 0) + 1;
+          const suffix = nameCount[baseName] > 1 ? `-${nameCount[baseName]}` : "";
+          entries[`${baseName}${suffix}${ext}`] = new Uint8Array(buffer);
+        })
+      );
+
+      const zipped = zipSync(entries);
+      const blob = new Blob([zipped.buffer as ArrayBuffer], { type: "application/zip" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "assets.zip";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      toast.error("Failed to create ZIP archive");
     }
     dismissBatch();
   }, [batchAssets, dismissBatch]);
@@ -221,9 +270,8 @@ export function AssetsClient({
       return;
     }
 
-    toast.info(`Downloading ${toDownload.length} file(s)...`);
-
-    for (const asset of toDownload) {
+    if (toDownload.length === 1) {
+      const asset = toDownload[0]!;
       try {
         const response = await fetch(asset.cleanUrl!);
         const blob = await response.blob();
@@ -235,23 +283,49 @@ export function AssetsClient({
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        await new Promise((r) => setTimeout(r, 300));
       } catch {
         toast.error(`Failed to download ${asset.name ?? asset.id}`);
       }
+      handleExitSelectMode();
+      return;
+    }
+
+    toast.info(`Preparing ZIP of ${toDownload.length} files...`);
+    try {
+      const entries: Record<string, Uint8Array> = {};
+      const nameCount: Record<string, number> = {};
+
+      await Promise.all(
+        toDownload.map(async (asset) => {
+          const response = await fetch(asset.cleanUrl!);
+          const buffer = await response.arrayBuffer();
+          const ext = getExtFromContentType(response.headers.get("content-type"));
+          const baseName = asset.name ?? `asset-${asset.id}`;
+          nameCount[baseName] = (nameCount[baseName] ?? 0) + 1;
+          const suffix = nameCount[baseName] > 1 ? `-${nameCount[baseName]}` : "";
+          entries[`${baseName}${suffix}${ext}`] = new Uint8Array(buffer);
+        })
+      );
+
+      const zipped = zipSync(entries);
+      const blob = new Blob([zipped.buffer as ArrayBuffer], { type: "application/zip" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "assets.zip";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      toast.error("Failed to create ZIP archive");
     }
 
     handleExitSelectMode();
   }, [userAssets, selectedIds, handleExitSelectMode]);
 
   const renderGrid = (assets: Asset[]) => (
-    <div
-      className={`grid gap-3 md:gap-6 ${
-        isMobile
-          ? "grid-cols-3"
-          : "grid-cols-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4"
-      }`}
-    >
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 md:gap-6">
       {assets.map((asset) => (
         <AssetCard
           key={asset.id}
@@ -289,7 +363,7 @@ export function AssetsClient({
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sticky top-0 z-10 bg-background pb-3 -mx-6 px-6 -mt-6 pt-1 before:absolute before:content-[''] before:-inset-x-6 before:top-[-24px] before:h-6 before:bg-background">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sticky top-0 z-10 bg-background pt-4 pb-4 md:pt-1 md:pb-3 -mx-6 px-6 -mt-6 before:absolute before:content-[''] before:-inset-x-6 before:top-[-24px] before:h-6 before:bg-background border-b border-border/40 md:border-b-0">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Assets</h1>
           <p className="text-sm text-muted-foreground mt-1">
