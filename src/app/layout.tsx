@@ -4,8 +4,10 @@ import { ThemeProvider } from "@/components/theme-provider";
 import "@/styles/globals.css";
 
 import { type Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
+import { cn } from "@/lib/utils";
 
+const jetbrainsMono = JetBrains_Mono({subsets:['latin'],variable:'--font-mono'});
 
 export const metadata: Metadata = {
   title: "AirOne Studio",
@@ -22,7 +24,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${inter.variable}`} suppressHydrationWarning>
+    <html lang="en" className={cn(inter.variable, "font-mono", jetbrainsMono.variable)} suppressHydrationWarning>
 
       <body>
         <ThemeProvider
