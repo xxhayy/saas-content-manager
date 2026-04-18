@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { auth } from "@/server/better-auth/config";
 import { db } from "@/server/db";
 import type { AssetCategory } from "@prisma/client";
-import { submitTask, CATEGORY_PROMPTS } from "@/server/kie-ai";
+import { submitTask } from "@/server/kie-ai";
 
 export async function POST(req: NextRequest) {
   try {
@@ -40,16 +40,14 @@ export async function POST(req: NextRequest) {
       )
     );
 
-    const prompt = CATEGORY_PROMPTS[body.category];
-
     // Offload Kie.ai task submission to background execution
     after(async () => {
       console.log(`[Upload] Starting background submission of ${assets.length} assets to Kie.ai...`);
-      
+
       await Promise.all(
         assets.map(async (asset) => {
           try {
-            const taskId = await submitTask(asset.originalUrl, prompt, asset.id);
+            const taskId = await submitTask(asset.originalUrl, body.category, asset.id);
             if (taskId) {
               await db.asset.update({
                 where: { id: asset.id },

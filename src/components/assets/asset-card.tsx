@@ -200,7 +200,7 @@ function AssetCardInner({
           <div className="absolute inset-0 flex flex-col items-center justify-center z-0">
             <Loader2 className="w-8 h-8 text-primary animate-spin mb-2" />
             <span className="text-[10px] font-bold text-foreground tracking-widest uppercase animate-pulse">
-              AI Processing
+               Processing
             </span>
           </div>
         )}

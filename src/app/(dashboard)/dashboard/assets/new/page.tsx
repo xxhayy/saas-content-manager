@@ -1,20 +1,18 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
-import type { ComponentType, SVGProps } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { 
-  ArrowLeft, 
-  Upload, 
-  Armchair, 
-  ShoppingBag, 
-  UserCircle,
+import {
+  ArrowLeft,
+  Upload,
   CheckCircle2,
   ChevronRight,
   Loader2,
-  X
+  X,
+  Sparkles,
+  ChevronDown,
 } from "lucide-react";
 import { upload } from "@imagekit/next";
 import { Button } from "@/components/ui/button";
@@ -31,32 +29,35 @@ import {
 
 type AssetCategory = "FURNITURE" | "COMMERCE_PRODUCT" | "AVATAR";
 
-type IconComponent = ComponentType<SVGProps<SVGSVGElement>>;
-
-const categories: { id: AssetCategory; label: string; icon: IconComponent; description: string }[] = [
-  { 
-    id: "FURNITURE", 
-    label: "Furniture", 
-    icon: Armchair, 
-    description: "3D models, textures, or specs for chairs, desks, sofas, etc." 
+// ─── STYLES ────────────────────────────────────────────────────────────────
+// To add a new style: add an entry here with the DB category value, a label,
+// and the ImageKit URL of the preview thumbnail.
+// See ADDING A NEW STYLE in the project docs for the full checklist.
+const categories: { id: AssetCategory; label: string; previewUrl: string }[] = [
+  {
+    id: "FURNITURE",
+    label: "Furniture",
+    // TODO: replace with your actual ImageKit preview URL
+    previewUrl: "https://ik.imagekit.io/aironestu/assets/previews/furniture-preview.jpg",
   },
-  { 
-    id: "COMMERCE_PRODUCT", 
-    label: "Commerce Product", 
-    icon: ShoppingBag, 
-    description: "Product shots, mockups, or listing assets for retail items." 
+  {
+    id: "COMMERCE_PRODUCT",
+    label: "Commerce Product",
+    // TODO: replace with your actual ImageKit preview URL
+    previewUrl: "https://ik.imagekit.io/aironestu/assets/previews/commerce-preview.jpg",
   },
-  { 
-    id: "AVATAR", 
-    label: "Avatar", 
-    icon: UserCircle, 
-    description: "Profile photos, character renders, or representative icons." 
+  {
+    id: "AVATAR",
+    label: "Avatar",
+    // TODO: replace with your actual ImageKit preview URL
+    previewUrl: "https://ik.imagekit.io/aironestu/assets/previews/avatar-preview.jpg",
   },
 ];
 
 export default function NewAssetPage() {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<AssetCategory | null>(null);
+  const [styleDialogOpen, setStyleDialogOpen] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [uploadStep, setUploadStep] = useState<"IDLE" | "UPLOADING" | "COMPLETE">("IDLE");
@@ -73,8 +74,8 @@ export default function NewAssetPage() {
     const imageFiles = newFiles.filter((f) => f.type.startsWith("image/"));
     const total = files.length + imageFiles.length;
 
-    if (total > 10) {
-      toast.error("Maximum 10 images per upload");
+    if (total > 20) {
+      toast.error("Maximum 20 images per upload");
       return;
     }
 
@@ -84,7 +85,8 @@ export default function NewAssetPage() {
   }, [files.length]);
 
   const removeFile = (index: number) => {
-    URL.revokeObjectURL(previews[index]!);
+    const preview = previews[index];
+    if (preview) URL.revokeObjectURL(preview);
     setFiles((prev) => prev.filter((_, i) => i !== index));
     setPreviews((prev) => prev.filter((_, i) => i !== index));
   };
@@ -112,9 +114,8 @@ export default function NewAssetPage() {
         if (data.action === "picked" && data.docs) {
           setUploadStep("UPLOADING");
           const loadToast = toast.loading("Downloading files from Google Drive...");
-          
+
           try {
-             // Try to get token from state or gapi
              interface GapiWindow {
                gapi?: {
                  client?: { getToken?: () => { access_token?: string } };
@@ -139,7 +140,7 @@ export default function NewAssetPage() {
                  return new File([blob], `${sanitizedName}.jpg`, { type: doc.mimeType });
                })
              );
-             
+
              handleFiles(downloadedFiles);
              toast.dismiss(loadToast);
              toast.success(`Successfully imported ${downloadedFiles.length} file(s)`);
@@ -216,6 +217,8 @@ export default function NewAssetPage() {
     }
   };
 
+  const selectedStyle = categories.find((c) => c.id === selectedCategory);
+
   return (
     <div className="max-w-3xl mx-auto space-y-8 pb-12 animate-in fade-in duration-500">
       {/* Back Link */}
@@ -231,51 +234,55 @@ export default function NewAssetPage() {
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">Create New Asset</h1>
         <p className="text-muted-foreground text-lg">
-          Add high-quality assets to your creative library for AI processing.
+          Add high-quality assets to your creative library.
         </p>
       </div>
 
       <div className="space-y-10">
-        {/* Step 1: Choose Category */}
-        <section className="space-y-6">
+        {/* Step 1: Choose Style */}
+        <section className="space-y-4">
           <div className="flex items-center gap-3">
             <div className="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-bold shadow-lg shadow-primary/20">1</div>
-            <h2 className="text-xl font-semibold text-foreground">Choose Asset Category</h2>
+            <h2 className="text-xl font-semibold text-foreground">Choose a Style</h2>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {categories.map((cat) => {
-              const Icon = cat.icon;
-              const isSelected = selectedCategory === cat.id;
-              return (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => setSelectedCategory(cat.id)}
-                  className={`relative flex flex-col items-start p-5 rounded-2xl border-2 text-left transition-all duration-300 group ${
-                    isSelected 
-                      ? "border-primary bg-primary/5 ring-4 ring-primary/10" 
-                      : "border-border bg-card/40 hover:border-border/80 hover:bg-accent/20 backdrop-blur-sm"
-                  }`}
-                >
-                  <div className={`p-3 rounded-xl mb-4 transition-colors ${
-                    isSelected ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground group-hover:text-foreground"
-                  }`}>
-                    <Icon className="size-6" />
-                  </div>
-                  <h3 className="font-semibold text-foreground mb-1">{cat.label}</h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    {cat.description}
-                  </p>
-                  {isSelected && (
-                    <div className="absolute top-4 right-4 text-primary animate-in zoom-in duration-300">
-                      <CheckCircle2 className="size-5 fill-primary text-white" />
-                    </div>
-                  )}
-                </button>
-              );
-            })}
-          </div>
+
+          {selectedStyle ? (
+            /* Selected style summary — click to reopen dialog */
+            <button
+              type="button"
+              onClick={() => setStyleDialogOpen(true)}
+              className="w-full flex items-center gap-4 p-3 rounded-2xl border-2 border-primary bg-primary/5 ring-4 ring-primary/10 text-left transition-all hover:bg-primary/10 group"
+            >
+              <div className="relative size-14 shrink-0 rounded-xl overflow-hidden border border-border/50 bg-muted">
+                <Image
+                  src={selectedStyle.previewUrl}
+                  alt={selectedStyle.label}
+                  fill
+                  className="object-cover"
+                  unoptimized
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-0.5">Selected Style</p>
+                <p className="font-semibold text-foreground truncate">{selectedStyle.label}</p>
+              </div>
+              <div className="flex items-center gap-2 text-muted-foreground group-hover:text-foreground transition-colors pr-1">
+                <span className="text-xs">Change</span>
+                <ChevronDown className="size-4" />
+              </div>
+            </button>
+          ) : (
+            /* No style selected yet */
+            <button
+              type="button"
+              onClick={() => setStyleDialogOpen(true)}
+              className="w-full flex items-center justify-center gap-3 p-5 rounded-2xl border-2 border-dashed border-border hover:border-primary/50 hover:bg-primary/5 text-muted-foreground hover:text-foreground transition-all duration-300 group"
+            >
+              <Sparkles className="size-5 group-hover:text-primary transition-colors" />
+              <span className="font-medium">Browse Styles</span>
+              <ChevronDown className="size-4" />
+            </button>
+          )}
         </section>
 
         {selectedCategory && (
@@ -289,55 +296,40 @@ export default function NewAssetPage() {
                 <h2 className="text-xl font-semibold text-foreground">Select Source & Upload</h2>
               </div>
 
-              {/* Source Selection Grid */}
+              {/* Source: Google Drive + Drop Zone side by side */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div
-                  className="group relative flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-primary bg-primary/5 ring-4 ring-primary/10 transition-all duration-300 backdrop-blur-sm"
-                >
-                  <div className="flex size-14 items-center justify-center rounded-full bg-primary/20 mb-4">
-                    <Upload className="size-7 text-primary" />
-                  </div>
-                  <div className="text-center">
-                    <p className="text-base font-bold text-foreground">Local Files</p>
-                    <p className="text-sm text-muted-foreground">Upload from your computer</p>
-                  </div>
-                  <div className="absolute top-4 right-4 text-primary animate-in zoom-in duration-300">
-                    <CheckCircle2 className="size-5 fill-primary text-white" />
-                  </div>
-                </div>
-
+                {/* Google Drive */}
                 <button
                   type="button"
-                  className="group relative flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-border bg-card/40 hover:border-[#4285F4]/50 hover:bg-[#4285F4]/5 transition-all duration-300 backdrop-blur-sm"
+                  className="group flex flex-col items-center justify-center gap-3 p-8 rounded-2xl border-2 border-border bg-card/40 hover:border-[#4285F4]/50 hover:bg-[#4285F4]/5 transition-all duration-300 backdrop-blur-sm"
                   onClick={handleDrivePicker}
                 >
-                  <div className="flex size-14 items-center justify-center rounded-full bg-[#4285F4]/10 mb-4 group-hover:bg-[#4285F4]/20 transition-colors">
+                  <div className="flex size-14 shrink-0 items-center justify-center rounded-full bg-[#4285F4]/10 group-hover:bg-[#4285F4]/20 transition-colors">
                     <svg viewBox="0 0 24 24" className="size-7 fill-[#4285F4]" xmlns="http://www.w3.org/2000/svg">
                       <path d="M12.532 5.034l4.51 7.823-4.51 7.822h-9l4.51-7.822zM21.522 17.856l-4.507 2.822-4.483-7.822 4.507-7.821 4.483 7.821zM11.66 3.655l4.507 7.822-4.507 7.822-4.507-7.822z" />
                     </svg>
                   </div>
                   <div className="text-center">
                     <p className="text-base font-bold text-foreground group-hover:text-[#4285F4] transition-colors">Google Drive</p>
-                    <p className="text-sm text-muted-foreground">Select from your Drive</p>
+                    <p className="text-sm text-muted-foreground">Import from your Drive</p>
                   </div>
                 </button>
-              </div>
 
-              {/* Upload Zone (For Local Selection) */}
-              <div
-                className={`relative rounded-2xl border-2 border-dashed p-10 text-center transition-all ${
-                  isDragging
-                    ? "border-primary bg-primary/5 ring-4 ring-primary/10"
-                    : "border-border bg-muted/20 hover:border-primary/50 hover:bg-card/80 backdrop-blur-sm"
-                }`}
-                onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-                onDragLeave={() => setIsDragging(false)}
-                onDrop={(e) => { 
-                    e.preventDefault(); 
-                    setIsDragging(false); 
+                {/* Upload Drop Zone */}
+                <div
+                  className={`flex flex-col items-center justify-center gap-3 p-8 rounded-2xl border-2 border-dashed text-center transition-all cursor-pointer ${
+                    isDragging
+                      ? "border-primary bg-primary/5 ring-4 ring-primary/10"
+                      : "border-border bg-muted/20 hover:border-primary/50 hover:bg-card/80 backdrop-blur-sm"
+                  }`}
+                  onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                  onDragLeave={() => setIsDragging(false)}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setIsDragging(false);
                     handleFiles(Array.from(e.dataTransfer.files));
-                }}
-                onClick={() => {
+                  }}
+                  onClick={() => {
                     const input = document.createElement("input");
                     input.type = "file";
                     input.multiple = true;
@@ -347,19 +339,14 @@ export default function NewAssetPage() {
                       if (target.files) handleFiles(Array.from(target.files));
                     };
                     input.click();
-                }}
-              >
-                <div className="flex flex-col items-center gap-3 cursor-pointer">
-                  <div className="flex size-12 items-center justify-center rounded-xl bg-muted group-hover:bg-primary/10 transition-colors">
-                    <Upload className="size-6 text-muted-foreground group-hover:text-primary transition-colors" />
+                  }}
+                >
+                  <div className="flex size-14 items-center justify-center rounded-full bg-muted">
+                    <Upload className="size-7 text-muted-foreground" />
                   </div>
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-foreground">
-                      Click to upload or drag and drop
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      PNG, JPG, or WebP (Max 10 images)
-                    </p>
+                  <div className="text-center">
+                    <p className="text-base font-bold text-foreground">Local Files</p>
+                    <p className="text-sm text-muted-foreground">Click or drag & drop</p>
                   </div>
                 </div>
               </div>
@@ -402,34 +389,85 @@ export default function NewAssetPage() {
               <Link href="/dashboard/assets">
                 <Button variant="ghost" className="rounded-xl px-6">Cancel</Button>
               </Link>
-              <Button 
+              <Button
                 onClick={handleUpload}
                 disabled={files.length === 0 || uploadStep !== "IDLE"}
                 className="rounded-xl px-8 h-11 bg-primary text-primary-foreground hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
               >
                 {uploadStep !== "IDLE" ? (
-                    <>
-                        <Loader2 className="size-4 animate-spin mr-2" />
-                        Uploading...
-                    </>
+                  <>
+                    <Loader2 className="size-4 animate-spin mr-2" />
+                    Uploading...
+                  </>
                 ) : (
-                    <>
-                        Process {files.length} Asset{files.length !== 1 ? 's' : ''}
-                        <ChevronRight className="size-4 ml-2" />
-                    </>
+                  <>
+                    Process {files.length} Asset{files.length !== 1 ? "s" : ""}
+                    <ChevronRight className="size-4 ml-2" />
+                  </>
                 )}
               </Button>
             </div>
           </div>
         )}
-
-        {!selectedCategory && (
-          <div className="p-8 text-center rounded-2xl border-2 border-dashed border-border bg-muted/20 backdrop-blur-sm animate-pulse-subtle">
-            <p className="text-muted-foreground">Select a category above to continue with asset details.</p>
-          </div>
-        )}
       </div>
 
+      {/* ── Style Picker Dialog ── */}
+      <Dialog open={styleDialogOpen} onOpenChange={setStyleDialogOpen}>
+        <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl">Choose a Style</DialogTitle>
+            <DialogDescription>
+              Select the output style you want applied to your uploaded images.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-2 pb-2">
+            {categories.map((cat) => {
+              const isSelected = selectedCategory === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => {
+                    setSelectedCategory(cat.id);
+                    setStyleDialogOpen(false);
+                  }}
+                  className={`relative flex flex-col rounded-xl border-2 overflow-hidden text-left transition-all duration-200 group ${
+                    isSelected
+                      ? "border-primary ring-4 ring-primary/20"
+                      : "border-border hover:border-primary/50"
+                  }`}
+                >
+                  {/* Image */}
+                  <div className="relative w-full aspect-square bg-muted overflow-hidden">
+                    <Image
+                      src={cat.previewUrl}
+                      alt={`${cat.label} style preview`}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      unoptimized
+                    />
+                    {isSelected && (
+                      <div className="absolute inset-0 bg-primary/10" />
+                    )}
+                    {isSelected && (
+                      <div className="absolute top-2 right-2 drop-shadow">
+                        <CheckCircle2 className="size-5 fill-primary text-white" />
+                      </div>
+                    )}
+                  </div>
+                  {/* Label */}
+                  <div className="px-3 py-2">
+                    <p className="text-sm font-semibold text-foreground truncate">{cat.label}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Upload Progress Dialog ── */}
       <Dialog open={uploadStep !== "IDLE"} onOpenChange={(open) => {
         if (!open && uploadStep === "UPLOADING") return;
         if (!open && uploadStep === "COMPLETE") {
@@ -447,7 +485,7 @@ export default function NewAssetPage() {
                 </div>
                 <DialogTitle className="text-xl">Uploading Files...</DialogTitle>
                 <DialogDescription className="text-center text-base">
-                  Please keep this window open while we securely upload your {files.length ? files.length : ''} asset{files.length !== 1 ? 's' : ''}.
+                  Please keep this window open while we securely upload your {files.length ? files.length : ""} asset{files.length !== 1 ? "s" : ""}.
                 </DialogDescription>
               </>
             ) : uploadStep === "COMPLETE" ? (
@@ -464,13 +502,13 @@ export default function NewAssetPage() {
           </DialogHeader>
           {uploadStep === "COMPLETE" && (
             <div className="flex justify-center mt-6">
-              <Button 
+              <Button
                 onClick={() => {
                   setUploadStep("IDLE");
                   router.push("/dashboard/assets");
                   router.refresh();
                 }}
-                className="min-w-[120px] rounded-xl mb-4"
+                className="min-w-30 rounded-xl mb-4"
               >
                 OK
               </Button>

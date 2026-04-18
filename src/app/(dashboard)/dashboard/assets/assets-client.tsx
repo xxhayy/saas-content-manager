@@ -110,7 +110,11 @@ export function AssetsClient({
     try {
       const result = await getAssetsPage(nextPage);
       if (result.success && result.assets) {
-        setUserAssets((prev) => [...prev, ...(result.assets as unknown as Asset[])]);
+        setUserAssets((prev) => {
+            const existingIds = new Set(prev.map((a) => a.id));
+            const incoming = (result.assets as unknown as Asset[]).filter((a) => !existingIds.has(a.id));
+            return [...prev, ...incoming];
+          });
         setTotal(result.total);
         setHasMore(result.hasMore);
         setNextPage((p) => p + 1);
@@ -367,7 +371,7 @@ export function AssetsClient({
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Assets</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Manage your creative components across projects
+            Manage your creative components
           </p>
         </div>
         <div className="flex items-center gap-3">
