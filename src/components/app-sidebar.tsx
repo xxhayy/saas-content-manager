@@ -4,14 +4,14 @@ import * as React from "react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import {
-  Home,
-  Folder,
-  Image as ImageIcon,
-  PlusCircle,
-  LayoutGrid,
-  Sparkles,
-  ChevronRight
-} from "lucide-react"
+  RiHomeLine,
+  RiFolderLine,
+  RiImageLine,
+  RiAddCircleLine,
+  RiLayoutGridLine,
+  RiSparklingLine,
+  RiArrowRightSLine,
+} from "@remixicon/react"
 
 import { UserButton } from "@daveyplate/better-auth-ui"
 
@@ -54,28 +54,28 @@ const navItems: NavItem[] = [
   {
     title: "Home",
     url: "/dashboard",
-    icon: Home,
+    icon: RiHomeLine,
     exact: true,
   },
   {
     title: "Gallery",
     url: "/dashboard/gallery",
-    icon: LayoutGrid
+    icon: RiLayoutGridLine
   },
   {
     title: "Projects",
     url: "/dashboard/projects",
-    icon: Folder
+    icon: RiFolderLine
   },
   {
     title: "Assets",
     url: "/dashboard/assets",
-    icon: ImageIcon
+    icon: RiImageLine
   },
   {
     title: "Create",
     url: "#",
-    icon: PlusCircle,
+    icon: RiAddCircleLine,
     items: [
       {
         title: "New Project",
@@ -122,7 +122,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader className="h-14 justify-center px-3 pb-5 pt-10">
         <div className="flex items-center gap-2 rounded-xl  px-3 py-4">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Sparkles className="size-4" />
+            <RiSparklingLine className="size-4" />
           </div>
           <span className="font-semibold tracking-tight text-base">
             AirOne Studio
@@ -155,7 +155,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           >
                             {item.icon && <item.icon className="size-4" />}
                             <span>{item.title}</span>
-                            <ChevronRight className="ml-auto size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                            <RiArrowRightSLine className="ml-auto size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                           </SidebarMenuButton>
                         </CollapsibleTrigger>
                         <CollapsibleContent>

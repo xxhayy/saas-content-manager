@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import Image from "next/image";
-import { UploadCloud, X, Loader2 } from "lucide-react";
+import { RiUploadCloud2Line, RiCloseLine, RiLoader4Line } from "@remixicon/react";
 import { upload } from "@imagekit/next";
 
 import {
@@ -146,7 +146,7 @@ export function AssetUploadZone({ onUploadComplete }: UploadZoneProps) {
 
       <DialogTrigger asChild>
         <Button>
-          <UploadCloud className="mr-2 h-4 w-4" />
+          <RiUploadCloud2Line className="mr-2 h-4 w-4" />
           Upload Assets
         </Button>
       </DialogTrigger>
@@ -199,7 +199,7 @@ export function AssetUploadZone({ onUploadComplete }: UploadZoneProps) {
               input.click();
             }}
           >
-            <UploadCloud className="mb-2 h-10 w-10 text-muted-foreground" />
+            <RiUploadCloud2Line className="mb-2 h-10 w-10 text-muted-foreground" />
             <p className="text-sm font-medium">
               Drop images here or click to browse
             </p>
@@ -233,7 +233,7 @@ export function AssetUploadZone({ onUploadComplete }: UploadZoneProps) {
                     }}
                     className="absolute right-1 top-1 rounded-full bg-destructive p-0.5 text-destructive-foreground opacity-0 transition-opacity group-hover:opacity-100"
                   >
-                    <X className="h-3 w-3" />
+                    <RiCloseLine className="h-3 w-3" />
                   </button>
                 </div>
               ))}
@@ -248,7 +248,7 @@ export function AssetUploadZone({ onUploadComplete }: UploadZoneProps) {
           >
             {isUploading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <RiLoader4Line className="mr-2 h-4 w-4 animate-spin" />
                 Uploading...
               </>
             ) : (

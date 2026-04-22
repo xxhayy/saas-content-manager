@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Providers } from "@/components/providers";
-import { Sparkles } from "lucide-react";
+import { RiSparklingLine } from "@remixicon/react";
 import Link from "next/link";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
@@ -17,7 +17,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 w-fit">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/20 bg-white/5 backdrop-blur-sm">
-              <Sparkles className="h-7 w-7 text-white" />
+              <RiSparklingLine className="h-7 w-7 text-white" />
             </div>
             <span className="text-2xl font-bold text-white tracking-tight">
               Air One Studio
@@ -44,7 +44,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           <div className="mb-8 text-center lg:hidden">
             <Link href="/" className="inline-flex items-center gap-2">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-black shadow-sm">
-                <Sparkles className="h-6 w-6 text-white" />
+                <RiSparklingLine className="h-6 w-6 text-white" />
               </div>
               <span className="text-xl font-bold text-black tracking-tight">
                 Air One Studio

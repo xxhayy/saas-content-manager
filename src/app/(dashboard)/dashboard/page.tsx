@@ -1,12 +1,12 @@
-import { 
-  ArrowRight, 
-  ImageIcon, 
-  Clock, 
-  Sparkles,
-  TrendingUp,
-  Folder,
-  LayoutGrid,
-} from "lucide-react";
+import {
+  RiArrowRightLine,
+  RiImageLine,
+  RiTimeLine,
+  RiSparklingLine,
+  RiArrowUpLine,
+  RiFolderLine,
+  RiLayoutGridLine,
+} from "@remixicon/react";
 import Link from "next/link";
 import Image from "next/image";
 import { headers } from "next/headers";
@@ -15,10 +15,10 @@ import { db } from "@/server/db";
 import { redirect } from "next/navigation";
 
 const stats = [
-  { label: "Total Projects", value: "24", icon: Folder, change: "+3 this week" },
-  { label: "Assets", value: "142", icon: ImageIcon, change: "+18 this month" },
-  { label: "Gallery Items", value: "87", icon: LayoutGrid, change: "+5 today" },
-  { label: "Recent Activity", value: "9", icon: Clock, change: "last 24h" },
+  { label: "Total Projects", value: "24", icon: RiFolderLine, change: "+3 this week" },
+  { label: "Assets", value: "142", icon: RiImageLine, change: "+18 this month" },
+  { label: "Gallery Items", value: "87", icon: RiLayoutGridLine, change: "+5 today" },
+  { label: "Recent Activity", value: "9", icon: RiTimeLine, change: "last 24h" },
 ];
 
 const statusColors: Record<string, string> = {
@@ -46,7 +46,7 @@ export default async function DashboardPage() {
       {/* Welcome Header */}
       <div className="flex items-start gap-4">
         <div className="flex size-12 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 shadow-inner">
-          <Sparkles className="size-6 text-primary" />
+          <RiSparklingLine className="size-6 text-primary" />
         </div>
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">Welcome back to AirOne Studio</h1>
@@ -73,7 +73,7 @@ export default async function DashboardPage() {
               {stat.value}
             </div>
             <div className="flex items-center gap-1.5 text-[10px] font-medium text-emerald-500/90">
-              <TrendingUp className="size-3" />
+              <RiArrowUpLine className="size-3" />
               {stat.change}
             </div>
           </div>
@@ -89,7 +89,7 @@ export default async function DashboardPage() {
             className="group flex flex-col items-start gap-4 rounded-3xl border border-border bg-card/40 p-6 hover:bg-accent/40 hover:border-sidebar-primary/20 transition-all duration-300 backdrop-blur-sm shadow-sm"
           >
             <div className="flex size-12 items-center justify-center rounded-2xl bg-primary/10 border border-primary/10 group-hover:bg-primary/20 transition-colors">
-              <Folder className="size-6 text-primary" />
+              <RiFolderLine className="size-6 text-primary" />
             </div>
             <div className="flex-1 w-full flex items-center justify-between">
               <div>
@@ -98,7 +98,7 @@ export default async function DashboardPage() {
                   Start a new creative project and automate your workflow.
                 </p>
               </div>
-              <ArrowRight className="size-5 text-muted-foreground/50 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+              <RiArrowRightLine className="size-5 text-muted-foreground/50 group-hover:text-primary group-hover:translate-x-1 transition-all" />
             </div>
           </Link>
           <Link
@@ -106,7 +106,7 @@ export default async function DashboardPage() {
             className="group flex flex-col items-start gap-4 rounded-3xl border border-border bg-card/40 p-6 hover:bg-accent/40 hover:border-sidebar-primary/20 transition-all duration-300 backdrop-blur-sm shadow-sm"
           >
             <div className="flex size-12 items-center justify-center rounded-2xl bg-primary/10 border border-primary/10 group-hover:bg-primary/20 transition-colors">
-              <ImageIcon className="size-6 text-primary" />
+              <RiImageLine className="size-6 text-primary" />
             </div>
             <div className="flex-1 w-full flex items-center justify-between">
               <div>
@@ -115,7 +115,7 @@ export default async function DashboardPage() {
                   Upload source images for AI white-background extraction.
                 </p>
               </div>
-              <ArrowRight className="size-5 text-muted-foreground/50 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+              <RiArrowRightLine className="size-5 text-muted-foreground/50 group-hover:text-primary group-hover:translate-x-1 transition-all" />
             </div>
           </Link>
         </div>
@@ -131,14 +131,14 @@ export default async function DashboardPage() {
               className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors group"
             >
               View all
-              <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+              <RiArrowRightLine className="size-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
 
           <div className="rounded-2xl border border-border/50 bg-card/40 backdrop-blur-sm divide-y divide-border/30 overflow-hidden shadow-sm">
             {recentAssets.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-center italic text-muted-foreground/60 p-5">
-                <ImageIcon className="h-10 w-10 mb-3 opacity-20" />
+                <RiImageLine className="h-10 w-10 mb-3 opacity-20" />
                 <p className="text-sm">No activity recorded yet.</p>
               </div>
             ) : (
@@ -157,7 +157,7 @@ export default async function DashboardPage() {
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
                     ) : (
-                      <ImageIcon className="size-5 text-muted-foreground" />
+                      <RiImageLine className="size-5 text-muted-foreground" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -180,7 +180,7 @@ export default async function DashboardPage() {
                       {asset.status.replace("_", " ")}
                     </span>
                     {asset.status === "PROCESSING" && (
-                       <Clock className="size-4 text-amber-500 animate-pulse" />
+                       <RiTimeLine className="size-4 text-amber-500 animate-pulse" />
                     )}
                   </div>
                 </div>

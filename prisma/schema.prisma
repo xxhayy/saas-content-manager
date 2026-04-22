@@ -118,6 +118,8 @@ enum AssetCategory {
   FURNITURE
   COMMERCE_PRODUCT
   AVATAR
+  MENS_WATCH
+  WOMENS_WATCH
 }
 
 model Asset {

@@ -5,15 +5,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
-  ArrowLeft,
-  Upload,
-  CheckCircle2,
-  ChevronRight,
-  Loader2,
-  X,
-  Sparkles,
-  ChevronDown,
-} from "lucide-react";
+  RiArrowLeftLine,
+  RiUploadCloud2Line,
+  RiCheckboxCircleLine,
+  RiArrowRightSLine,
+  RiLoader4Line,
+  RiCloseLine,
+  RiSparklingLine,
+  RiArrowDownSLine,
+} from "@remixicon/react";
 import { upload } from "@imagekit/next";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -27,7 +27,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
-type AssetCategory = "FURNITURE" | "COMMERCE_PRODUCT" | "AVATAR";
+type AssetCategory = "FURNITURE" | "COMMERCE_PRODUCT" | "AVATAR" | "MENS_WATCH" | "WOMENS_WATCH";
 
 // ─── STYLES ────────────────────────────────────────────────────────────────
 // To add a new style: add an entry here with the DB category value, a label,
@@ -44,13 +44,25 @@ const categories: { id: AssetCategory; label: string; previewUrl: string }[] = [
     id: "COMMERCE_PRODUCT",
     label: "Commerce Product",
     // TODO: replace with your actual ImageKit preview URL
-    previewUrl: "https://ik.imagekit.io/aironestu/assets/previews/commerce-preview.jpg",
+    previewUrl: "https://ik.imagekit.io/aironestu/assets/previews/commerce-product-preview.png",
   },
   {
     id: "AVATAR",
     label: "Avatar",
     // TODO: replace with your actual ImageKit preview URL
     previewUrl: "https://ik.imagekit.io/aironestu/assets/previews/avatar-preview.jpg",
+  },
+  {
+    id: "MENS_WATCH",
+    label: "Men's Watch",
+    // TODO: replace with your actual ImageKit preview URL
+    previewUrl: "https://ik.imagekit.io/aironestu/assets/previews/mens-watch-preview.jpeg",
+  },
+  {
+    id: "WOMENS_WATCH",
+    label: "Women's Watch",
+    // TODO: replace with your actual ImageKit preview URL
+    previewUrl: "https://ik.imagekit.io/aironestu/assets/previews/womens-watch-preview.png",
   },
 ];
 
@@ -226,14 +238,14 @@ export default function NewAssetPage() {
         href="/dashboard/assets"
         className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group"
       >
-        <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-1" />
+        <RiArrowLeftLine className="size-4 transition-transform group-hover:-translate-x-1" />
         Back to Assets
       </Link>
 
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Create New Asset</h1>
-        <p className="text-muted-foreground text-lg">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">Create New Asset</h1>
+        <p className="text-muted-foreground text-md">
           Add high-quality assets to your creative library.
         </p>
       </div>
@@ -241,9 +253,9 @@ export default function NewAssetPage() {
       <div className="space-y-10">
         {/* Step 1: Choose Style */}
         <section className="space-y-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <div className="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-bold shadow-lg shadow-primary/20">1</div>
-            <h2 className="text-xl font-semibold text-foreground">Choose a Style</h2>
+            <h2 className="text-lg font-semibold text-foreground">Choose a Style</h2>
           </div>
 
           {selectedStyle ? (
@@ -268,7 +280,7 @@ export default function NewAssetPage() {
               </div>
               <div className="flex items-center gap-2 text-muted-foreground group-hover:text-foreground transition-colors pr-1">
                 <span className="text-xs">Change</span>
-                <ChevronDown className="size-4" />
+                <RiArrowDownSLine className="size-4" />
               </div>
             </button>
           ) : (
@@ -278,9 +290,9 @@ export default function NewAssetPage() {
               onClick={() => setStyleDialogOpen(true)}
               className="w-full flex items-center justify-center gap-3 p-5 rounded-2xl border-2 border-dashed border-border hover:border-primary/50 hover:bg-primary/5 text-muted-foreground hover:text-foreground transition-all duration-300 group"
             >
-              <Sparkles className="size-5 group-hover:text-primary transition-colors" />
+              <RiSparklingLine className="size-5 group-hover:text-primary transition-colors" />
               <span className="font-medium">Browse Styles</span>
-              <ChevronDown className="size-4" />
+              <RiArrowDownSLine className="size-4" />
             </button>
           )}
         </section>
@@ -342,7 +354,7 @@ export default function NewAssetPage() {
                   }}
                 >
                   <div className="flex size-14 items-center justify-center rounded-full bg-muted">
-                    <Upload className="size-7 text-muted-foreground" />
+                    <RiUploadCloud2Line className="size-7 text-muted-foreground" />
                   </div>
                   <div className="text-center">
                     <p className="text-base font-bold text-foreground">Local Files</p>
@@ -374,7 +386,7 @@ export default function NewAssetPage() {
                         }}
                         className="absolute right-1.5 top-1.5 rounded-full bg-destructive p-1 text-destructive-foreground opacity-0 transition-opacity group-hover:opacity-100 shadow-md"
                       >
-                        <X className="size-3" />
+                        <RiCloseLine className="size-3" />
                       </button>
                     </div>
                   ))}
@@ -396,13 +408,13 @@ export default function NewAssetPage() {
               >
                 {uploadStep !== "IDLE" ? (
                   <>
-                    <Loader2 className="size-4 animate-spin mr-2" />
+                    <RiLoader4Line className="size-4 animate-spin mr-2" />
                     Uploading...
                   </>
                 ) : (
                   <>
                     Process {files.length} Asset{files.length !== 1 ? "s" : ""}
-                    <ChevronRight className="size-4 ml-2" />
+                    <RiArrowRightSLine className="size-4 ml-2" />
                   </>
                 )}
               </Button>
@@ -421,7 +433,7 @@ export default function NewAssetPage() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-2 pb-2">
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-4 pt-2 pb-2">
             {categories.map((cat) => {
               const isSelected = selectedCategory === cat.id;
               return (
@@ -432,14 +444,14 @@ export default function NewAssetPage() {
                     setSelectedCategory(cat.id);
                     setStyleDialogOpen(false);
                   }}
-                  className={`relative flex flex-col rounded-xl border-2 overflow-hidden text-left transition-all duration-200 group ${
-                    isSelected
-                      ? "border-primary ring-4 ring-primary/20"
-                      : "border-border hover:border-primary/50"
-                  }`}
+                  className={`relative flex flex-col`}
                 >
-                  {/* Image */}
-                  <div className="relative w-full aspect-square bg-muted overflow-hidden">
+
+                {/* Move the boarder styling over to the image container */}
+                  <div className={`relative w-full aspect-square bg-muted overflow-hidden rounded-xl border-2 overflow-hidden transition-all duration-200 
+                  ${isSelected ? "border-primary ring-4 ring-primary/20" 
+                  : "border-border group-hover:border-primary/50"
+                }`} >
                     <Image
                       src={cat.previewUrl}
                       alt={`${cat.label} style preview`}
@@ -452,14 +464,15 @@ export default function NewAssetPage() {
                     )}
                     {isSelected && (
                       <div className="absolute top-2 right-2 drop-shadow">
-                        <CheckCircle2 className="size-5 fill-primary text-white" />
+                        <RiCheckboxCircleLine className="size-5 fill-primary text-white" />
                       </div>
                     )}
                   </div>
-                  {/* Label */}
-                  <div className="px-3 py-2">
-                    <p className="text-sm font-semibold text-foreground truncate">{cat.label}</p>
-                  </div>
+                  {/* Label below the image */}
+                  {/* Add the text here! */}
+                  <p className="text-sm font-medium text-foreground mt-2 text-center w-full">
+                    {cat.label}
+                  </p>
                 </button>
               );
             })}
@@ -481,17 +494,17 @@ export default function NewAssetPage() {
             {uploadStep === "UPLOADING" ? (
               <>
                 <div className="flex size-16 items-center justify-center rounded-full bg-primary/10 mb-2">
-                  <Loader2 className="size-8 animate-spin text-primary" />
+                  <RiLoader4Line className="size-8 animate-spin text-primary" />
                 </div>
                 <DialogTitle className="text-xl">Uploading Files...</DialogTitle>
                 <DialogDescription className="text-center text-base">
-                  Please keep this window open while we securely upload your {files.length ? files.length : ""} asset{files.length !== 1 ? "s" : ""}.
+                  Please keep this window open while your{files.length ? files.length : ""} images are being uploaded{files.length !== 1 ? "s" : ""}.
                 </DialogDescription>
               </>
             ) : uploadStep === "COMPLETE" ? (
               <>
                 <div className="flex size-16 items-center justify-center rounded-full bg-green-500/10 mb-2">
-                  <CheckCircle2 className="size-8 text-green-500" />
+                  <RiCheckboxCircleLine className="size-8 text-green-500" />
                 </div>
                 <DialogTitle className="text-xl">Upload Complete!</DialogTitle>
                 <DialogDescription className="text-center text-base">

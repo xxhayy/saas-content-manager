@@ -2,15 +2,12 @@
 
 import Image from "next/image";
 import {
-  Loader2,
-  AlertCircle,
-  Download,
-  Trash,
-  Armchair,
-  ShoppingBag,
-  UserCircle,
-  MoreVertical,
-} from "lucide-react";
+  RiLoader4Line,
+  RiAlertLine,
+  RiDownloadLine,
+  RiDeleteBinLine,
+  RiMoreLine,
+} from "@remixicon/react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,7 +25,6 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import React, { useState } from "react";
-import type { ComponentType, SVGProps } from "react";
 
 // Using the exact types coming from our Prisma schema
 type AssetsStatus = "PROCESSING" | "COMPLETED" | "FAILED";
@@ -44,14 +40,6 @@ export interface Asset {
   status: AssetsStatus;
   retryCount: number;
 }
-
-type IconComponent = ComponentType<SVGProps<SVGSVGElement>>;
-
-const categoryIcons: Record<AssetCategory, IconComponent> = {
-  FURNITURE: Armchair,
-  COMMERCE_PRODUCT: ShoppingBag,
-  AVATAR: UserCircle,
-};
 
 interface AssetCardProps {
   asset: Asset;
@@ -81,8 +69,6 @@ function AssetCardInner({
 
   // Only completed assets are selectable
   const isSelectable = isSelectMode && isCompleted;
-
-  const Icon = categoryIcons[asset.category];
 
   const handleRename = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -198,7 +184,7 @@ function AssetCardInner({
         {/* Processing/Failed Overlays */}
         {isProcessing && (
           <div className="absolute inset-0 flex flex-col items-center justify-center z-0">
-            <Loader2 className="w-8 h-8 text-primary animate-spin mb-2" />
+            <RiLoader4Line className="w-8 h-8 text-primary animate-spin mb-2" />
             <span className="text-[10px] font-bold text-foreground tracking-widest uppercase animate-pulse">
                Processing
             </span>
@@ -207,7 +193,7 @@ function AssetCardInner({
 
         {isFailed && (
           <div className="absolute inset-0 bg-destructive/10 flex flex-col items-center justify-center z-0">
-            <AlertCircle className="w-8 h-8 text-destructive mb-2" />
+            <RiAlertLine className="w-8 h-8 text-destructive mb-2" />
             <span className="text-xs font-semibold text-destructive text-center px-4">
               Processing Failed
             </span>
@@ -216,8 +202,7 @@ function AssetCardInner({
 
         {/* Category Badge — hidden on mobile */}
         <div className="absolute top-3 left-3 hidden md:block">
-          <div className="flex items-center gap-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10 px-2.5 py-1 text-[10px] font-medium text-white uppercase tracking-wider">
-            <Icon className="size-3" />
+          <div className="rounded-full bg-black/40 backdrop-blur-md border border-white/10 px-2.5 py-1 text-[10px] font-medium text-white uppercase tracking-wider">
             {asset.category.replace("_", " ")}
           </div>
         </div>
@@ -278,7 +263,7 @@ function AssetCardInner({
                   onClick={(e) => e.stopPropagation()}
                   className="shrink-0 flex items-center justify-center size-7 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                 >
-                  <MoreVertical className="size-4" />
+                  <RiMoreLine className="size-4" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
@@ -289,7 +274,7 @@ function AssetCardInner({
                       void handleDownload();
                     }}
                   >
-                    <Download className="size-4 mr-2" />
+                    <RiDownloadLine className="size-4 mr-2" />
                     Download
                   </DropdownMenuItem>
                 )}
@@ -300,7 +285,7 @@ function AssetCardInner({
                   }}
                   className="text-destructive focus:text-destructive"
                 >
-                  <Trash className="size-4 mr-2" />
+                  <RiDeleteBinLine className="size-4 mr-2" />
                   {isCompleted && "Delete"}
                   {isFailed && "Delete Failed"}
                   {isProcessing && "Cancel & Delete"}
@@ -335,7 +320,7 @@ function AssetCardInner({
             }}
             className="gap-2"
           >
-            <Trash className="size-4" />
+            <RiDeleteBinLine className="size-4" />
             Delete
           </Button>
           <div className="flex gap-3">
@@ -347,7 +332,7 @@ function AssetCardInner({
             </Button>
             {isCompleted && asset.cleanUrl && (
               <Button onClick={handleDownload} className="gap-2">
-                <Download className="size-4" />
+                <RiDownloadLine className="size-4" />
                 Download
               </Button>
             )}

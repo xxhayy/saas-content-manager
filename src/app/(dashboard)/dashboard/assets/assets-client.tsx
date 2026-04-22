@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import Link from "next/link";
-import { Plus, Search, Loader2, Download, CheckSquare, X, PartyPopper } from "lucide-react";
+import { RiAddLine, RiSearchLine, RiLoader4Line, RiDownloadLine, RiCheckboxLine, RiCloseLine, RiEmotionHappyLine } from "@remixicon/react";
 import { zipSync } from "fflate";
 
 const MIME_TO_EXT: Record<string, string> = {
@@ -208,7 +208,7 @@ export function AssetsClient({
     localStorage.removeItem("pendingBatch");
   }, []);
 
-  const handleBatchDownload = useCallback(async () => {
+  const handleBatchRiDownloadLine = useCallback(async () => {
     if (batchAssets.length === 0) return;
 
     if (batchAssets.length === 1) {
@@ -264,18 +264,18 @@ export function AssetsClient({
     dismissBatch();
   }, [batchAssets, dismissBatch]);
 
-  const handleDownload = useCallback(async () => {
-    const toDownload = userAssets.filter(
+  const handleRiDownloadLine = useCallback(async () => {
+    const toRiDownloadLine = userAssets.filter(
       (a) => selectedIds.has(a.id) && a.status === "COMPLETED" && a.cleanUrl
     );
 
-    if (toDownload.length === 0) {
+    if (toRiDownloadLine.length === 0) {
       toast.error("No completed assets selected.");
       return;
     }
 
-    if (toDownload.length === 1) {
-      const asset = toDownload[0]!;
+    if (toRiDownloadLine.length === 1) {
+      const asset = toRiDownloadLine[0]!;
       try {
         const response = await fetch(asset.cleanUrl!);
         const blob = await response.blob();
@@ -294,13 +294,13 @@ export function AssetsClient({
       return;
     }
 
-    toast.info(`Preparing ZIP of ${toDownload.length} files...`);
+    toast.info(`Preparing ZIP of ${toRiDownloadLine.length} files...`);
     try {
       const entries: Record<string, Uint8Array> = {};
       const nameCount: Record<string, number> = {};
 
       await Promise.all(
-        toDownload.map(async (asset) => {
+        toRiDownloadLine.map(async (asset) => {
           const response = await fetch(asset.cleanUrl!);
           const buffer = await response.arrayBuffer();
           const ext = getExtFromContentType(response.headers.get("content-type"));
@@ -354,7 +354,7 @@ export function AssetsClient({
       >
         {isLoadingMore ? (
           <>
-            <Loader2 className="size-4 mr-2 animate-spin" />
+            <RiLoader4Line className="size-4 mr-2 animate-spin" />
             Loading...
           </>
         ) : (
@@ -379,10 +379,10 @@ export function AssetsClient({
             <>
               {selectedIds.size > 0 && (
                 <Button
-                  onClick={handleDownload}
+                  onClick={handleRiDownloadLine}
                   className="rounded-xl px-4 py-2.5 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-all shadow-sm animate-in fade-in duration-200"
                 >
-                  <Download className="size-4 mr-2" />
+                  <RiDownloadLine className="size-4 mr-2" />
                   Download ({selectedIds.size})
                 </Button>
               )}
@@ -391,7 +391,7 @@ export function AssetsClient({
                 onClick={allCompleted ? handleDeselectAll : handleSelectAll}
                 className="rounded-xl px-4 py-2.5 text-sm font-medium transition-all"
               >
-                <CheckSquare className={`size-4 mr-2 ${allCompleted ? "fill-current" : ""}`} />
+                <RiCheckboxLine className={`size-4 mr-2 ${allCompleted ? "fill-current" : ""}`} />
                 {allCompleted ? "Deselect All" : `Select All (${completedCount})`}
               </Button>
               <Button
@@ -399,7 +399,7 @@ export function AssetsClient({
                 onClick={handleExitSelectMode}
                 className="rounded-xl px-4 py-2.5 text-sm font-medium transition-all"
               >
-                <X className="size-4 mr-2" />
+                <RiCloseLine className="size-4 mr-2" />
                 Done
               </Button>
             </>
@@ -410,12 +410,12 @@ export function AssetsClient({
                 onClick={() => setIsSelectMode(true)}
                 className="rounded-xl px-4 py-2.5 text-sm font-medium transition-all"
               >
-                <CheckSquare className="size-4 mr-2" />
+                <RiCheckboxLine className="size-4 mr-2" />
                 Select
               </Button>
               <Link href="/dashboard/assets/new">
                 <Button className="rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-all shadow-sm">
-                  <Plus className="size-4 mr-2" />
+                  <RiAddLine className="size-4 mr-2" />
                   New Asset
                 </Button>
               </Link>
@@ -424,13 +424,13 @@ export function AssetsClient({
         </div>
       </div>
 
-      {/* Batch Download Banner */}
+      {/* Batch RiDownloadLine Banner */}
       {showBatchBanner && (
         <div className="flex items-center justify-between gap-4 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 animate-in fade-in slide-in-from-top-2 duration-300">
           <div className="flex items-center gap-3">
             {batchAssets.length > 0 ? (
               <>
-                <PartyPopper className="size-4 text-primary shrink-0" />
+                <RiEmotionHappyLine className="size-4 text-primary shrink-0" />
                 <p className="text-sm font-medium text-foreground">
                   {batchPending > 0
                     ? `${batchAssets.length} ready · ${batchPending} still processing`
@@ -439,7 +439,7 @@ export function AssetsClient({
               </>
             ) : (
               <>
-                <Loader2 className="size-4 text-primary animate-spin shrink-0" />
+                <RiLoader4Line className="size-4 text-primary animate-spin shrink-0" />
                 <p className="text-sm font-medium text-foreground">
                   Processing {batchPending} asset{batchPending !== 1 ? "s" : ""}...
                 </p>
@@ -448,13 +448,13 @@ export function AssetsClient({
           </div>
           <div className="flex items-center gap-2">
             {batchAssets.length > 0 && (
-              <Button size="sm" onClick={handleBatchDownload} className="rounded-lg gap-1.5">
-                <Download className="size-3.5" />
+              <Button size="sm" onClick={handleBatchRiDownloadLine} className="rounded-lg gap-1.5">
+                <RiDownloadLine className="size-3.5" />
                 Download {batchPending === 0 ? "All" : `(${batchAssets.length})`}
               </Button>
             )}
             <button onClick={dismissBatch} className="text-muted-foreground hover:text-foreground transition-colors">
-              <X className="size-4" />
+              <RiCloseLine className="size-4" />
             </button>
           </div>
         </div>
@@ -486,7 +486,7 @@ export function AssetsClient({
 
           <div className="flex items-center gap-3">
             <div className="relative group">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground group-focus-within:text-foreground transition-colors" />
+              <RiSearchLine className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground group-focus-within:text-foreground transition-colors" />
               <Input
                 type="text"
                 placeholder="Search assets..."
