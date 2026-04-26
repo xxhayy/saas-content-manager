@@ -94,18 +94,55 @@ model Verification {
   @@map("verification")
 }
 
-model Project {
-  id         String   @id @default(cuid())
-  name       String?
-  imageUrl   String
-  imageKitId String
-  filePath   String
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+enum GenerationStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
 
+model Project {
+  id           String              @id @default(cuid())
+  name         String              @default("Untitled Project")
+  nodesJson    Json                @default("[]")
+  edgesJson    Json                @default("[]")
+  viewportJson Json                @default("{\"x\":0,\"y\":0,\"zoom\":1}")
+  thumbnailUrl String?
+  userId       String
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  generations  ProjectGeneration[]
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  @@index([userId])
   @@map("project")
+}
+
+model ProjectGeneration {
+  id             String           @id @default(cuid())
+  projectId      String
+  project        Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  outputNodeId   String
+  kieTaskId      String?
+  status         GenerationStatus @default(PENDING)
+  kieError       String?
+  prompt         String
+  aspectRatio    String           @default("1:1")
+  model          String           @default("nano-banana-2")
+  seed           Int?
+  variationIndex Int              @default(0)
+  inputImages    Json             @default("[]")
+  resultUrl      String?
+  imageUrl       String?
+  imageKitId     String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@index([projectId])
+  @@index([outputNodeId])
+  @@index([status])
+  @@index([kieTaskId])
+  @@map("project_generation")
 }
 
 enum AssetsStatus {

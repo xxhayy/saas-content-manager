@@ -33,6 +33,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  SidebarGroupLabel,
   useSidebar,
 } from "@/components/ui/sidebar"
 
@@ -49,45 +50,59 @@ interface NavItem {
   items?: NavSubItem[]
 }
 
+interface NavGroup {
+  title: string
+  items: NavItem[]
+}
+
 //Navigation
-const navItems: NavItem[] = [
+const navGroups: NavGroup[] = [
   {
-    title: "Home",
-    url: "/dashboard",
-    icon: RiHomeLine,
-    exact: true,
-  },
-  {
-    title: "Gallery",
-    url: "/dashboard/gallery",
-    icon: RiLayoutGridLine
-  },
-  {
-    title: "Projects",
-    url: "/dashboard/projects",
-    icon: RiFolderLine
-  },
-  {
-    title: "Assets",
-    url: "/dashboard/assets",
-    icon: RiImageLine
-  },
-  {
-    title: "Create",
-    url: "#",
-    icon: RiAddCircleLine,
+    title: "General",
     items: [
       {
-        title: "New Project",
-        url: "/dashboard/projects/new",
+        title: "Home",
+        url: "/dashboard",
+        icon: RiHomeLine,
+        exact: true,
       },
       {
-        title: "New Asset",
-        url: "/dashboard/assets/new",
+        title: "Gallery",
+        url: "/dashboard/gallery",
+        icon: RiLayoutGridLine
       },
-    ],
+    ]
   },
-  
+  {
+    title: "Workspace",
+    items: [
+      {
+        title: "Projects",
+        url: "/dashboard/projects",
+        icon: RiFolderLine
+      },
+      {
+        title: "Assets",
+        url: "/dashboard/assets",
+        icon: RiImageLine
+      },
+      {
+        title: "Create",
+        url: "#",
+        icon: RiAddCircleLine,
+        items: [
+          {
+            title: "New Project",
+            url: "/dashboard/projects/new",
+          },
+          {
+            title: "New Asset",
+            url: "/dashboard/assets/new",
+          },
+        ],
+      },
+    ]
+  }
 ]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -106,8 +121,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   // Check if any sub-item of "Create" is active, 
   // but EXCLUDE pages that should highlight their own main category (like Assets/Projects)
-  const isCreateActive = navItems
+  const createItem = navGroups
+    .flatMap(g => g.items)
     .find(n => n.title === "Create")
+
+  const isCreateActive = createItem
     ?.items?.some((sub: NavSubItem) => {
       // If we are on these pages, we want the main category (Assets or Projects) to highlight, not the "Create" group
       if (pathname === "/dashboard/assets/new" || pathname === "/dashboard/projects/new") {
@@ -132,75 +150,80 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
       {/* CONTENT: Navigation Links */}
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {navItems.map((item) => {
-                // If the item has sub-items (like "Create"), make it Collapsible
-                if (item.items) {
-                  return (
-                    <Collapsible
-                      key={item.title}
-                      asChild
-                      defaultOpen={isCreateActive}
-                      className="group/collapsible"
-                    >
-                      <SidebarMenuItem>
-                        <CollapsibleTrigger asChild>
-                          <SidebarMenuButton 
-                            size="sm" 
-                            className="text-sm font-medium" 
-                            tooltip={item.title}
-                            isActive={isCreateActive}
-                          >
+        {navGroups.map((group, index) => (
+          <React.Fragment key={group.title}>
+            <SidebarGroup>
+              <SidebarGroupLabel className="uppercase text-muted-foreground">{group.title}</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {group.items.map((item) => {
+                    // If the item has sub-items (like "Create"), make it Collapsible
+                    if (item.items) {
+                      return (
+                        <Collapsible
+                          key={item.title}
+                          asChild
+                          defaultOpen={isCreateActive}
+                          className="group/collapsible"
+                        >
+                          <SidebarMenuItem>
+                            <CollapsibleTrigger asChild>
+                              <SidebarMenuButton 
+                                size="sm" 
+                                className="text-sm font-medium" 
+                                tooltip={item.title}
+                                isActive={isCreateActive}
+                              >
+                                {item.icon && <item.icon className="size-4" />}
+                                <span>{item.title}</span>
+                                <RiArrowRightSLine className="ml-auto size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                              </SidebarMenuButton>
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                              <SidebarMenuSub>
+                                {item.items.map((subItem: NavSubItem) => (
+                                  <SidebarMenuSubItem key={subItem.title}>
+                                    <SidebarMenuSubButton
+                                      asChild
+                                      isActive={pathname === subItem.url}
+                                    >
+                                      <Link href={subItem.url} onClick={handleNavClick}>
+                                        <span>{subItem.title}</span>
+                                      </Link>
+                                    </SidebarMenuSubButton>
+                                  </SidebarMenuSubItem>
+                                ))}
+                              </SidebarMenuSub>
+                            </CollapsibleContent>
+                          </SidebarMenuItem>
+                        </Collapsible>
+                      )
+                    }
+
+                    // If it's a standard link (like Home, Projects, Assets)
+                    return (
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton
+                          size="sm"
+                          className="text-sm font-medium"
+                          asChild
+                          tooltip={item.title}
+                          isActive={isActive(item.url, item.exact)}
+                        >
+                          <Link href={item.url} onClick={handleNavClick}>
                             {item.icon && <item.icon className="size-4" />}
                             <span>{item.title}</span>
-                            <RiArrowRightSLine className="ml-auto size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                          </SidebarMenuButton>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          <SidebarMenuSub>
-                            {item.items.map((subItem: NavSubItem) => (
-                              <SidebarMenuSubItem key={subItem.title}>
-                                <SidebarMenuSubButton
-                                  asChild
-                                  isActive={pathname === subItem.url}
-                                >
-                                  <Link href={subItem.url} onClick={handleNavClick}>
-                                    <span>{subItem.title}</span>
-                                  </Link>
-                                </SidebarMenuSubButton>
-                              </SidebarMenuSubItem>
-                            ))}
-                          </SidebarMenuSub>
-                        </CollapsibleContent>
+                          </Link>
+                        </SidebarMenuButton>
                       </SidebarMenuItem>
-                    </Collapsible>
-                  )
-                }
+                    )
 
-                // If it's a standard link (like Home, Projects, Assets)
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      size="sm"
-                      className="text-sm font-medium"
-                      asChild
-                      tooltip={item.title}
-                      isActive={isActive(item.url, item.exact)}
-                    >
-                      <Link href={item.url} onClick={handleNavClick}>
-                        {item.icon && <item.icon className="size-4" />}
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                )
-
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+                  })}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </React.Fragment>
+        ))}
       </SidebarContent>
 
       {/* FOOTER: Better Auth User Profile */}

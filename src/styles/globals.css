@@ -161,4 +161,13 @@
       opacity: 0.8;
     }
   }
+
+  /* Override React Flow's built-in "output" node styling */
+  .react-flow__node-output {
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    width: auto !important;
+    box-shadow: none !important;
+  }
 }

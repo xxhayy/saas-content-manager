@@ -50,69 +50,117 @@ export async function POST(req: NextRequest) {
     const data = JSON.parse(rawBody) as KieWebhookPayload;
     
     // We expect assetId in the query string based on our submission logic
-    const assetId = req.nextUrl.searchParams.get("assetId");
-    
-    if (!assetId) {
-      console.error("[Webhook] Missing assetId in query params");
-      return Response.json({ error: "Missing assetId" }, { status: 400 });
+  const assetId = req.nextUrl.searchParams.get("assetId");
+const generationId = req.nextUrl.searchParams.get("generationId");
+
+if (!assetId && !generationId) {
+  console.error("[Webhook] Missing assetId or generationId in query params");
+  return Response.json({ error: "Missing assetId or generationId" }, { status: 400 });
+}
+
+  if (assetId) {
+  const asset = await db.asset.findUnique({ where: { id: assetId } });
+
+  if (!asset) {
+    console.error(`[Webhook] Asset not found: ${assetId}`);
+    return Response.json({ error: "Asset not found" }, { status: 404 });
+  }
+
+  const state = data.state ?? data.data?.state;
+
+  if (asset.status === "COMPLETED") {
+    return Response.json({ success: true, message: "Already completed" });
+  }
+
+  if (state === "success") {
+    const resultJsonStr = data.resultJson ?? data.data?.resultJson;
+    const resultObj = (resultJsonStr ? JSON.parse(resultJsonStr) : {}) as { resultUrls?: string[] };
+    const imageUrl = resultObj.resultUrls?.[0] ?? data.resultUrls?.[0];
+
+    if (!imageUrl) {
+      throw new Error("Success state but no image URL provided by Kie");
     }
 
-    // Find the asset
-    const asset = await db.asset.findUnique({ where: { id: assetId } });
-    
-    if (!asset) {
-      console.error(`[Webhook] Asset not found: ${assetId}`);
-      return Response.json({ error: "Asset not found" }, { status: 404 });
+    console.log(`[Webhook] Success for asset ${assetId}. Uploading to ImageKit...`);
+    const cleanUrl = await uploadToImageKit(imageUrl, `clean-${asset.id}.png`, "/assets/clean");
+
+    await db.asset.update({
+      where: { id: assetId },
+      data: {
+        cleanUrl,
+        status: "COMPLETED",
+        name: asset.name ?? `Asset ${asset.id.slice(-6)}`,
+      },
+    });
+    console.log(`[Webhook] Asset ${assetId} fully completed!`);
+
+  } else if (state === "fail" || state === "failed") {
+    const failedReason = data.failedReason ?? data.data?.failedReason ?? "Unknown Kie error";
+    console.error(`[Webhook] Kie processing failed for asset ${assetId}: ${failedReason}`);
+
+    await db.asset.update({
+      where: { id: assetId },
+      data: { status: "FAILED", kieError: failedReason },
+    });
+  } else {
+    console.log(`[Webhook] Received unhandled state for ${assetId}: ${state}`);
+  }
+  } else if (generationId) {
+  const generation = await db.projectGeneration.findUnique({
+    where: { id: generationId },
+    include: { project: true },
+  });
+
+  if (!generation) {
+    console.error(`[Webhook] ProjectGeneration not found: ${generationId}`);
+    return Response.json({ error: "Generation not found" }, { status: 404 });
+  }
+
+  if (generation.status === "COMPLETED") {
+    return Response.json({ success: true, message: "Already completed" });
+  }
+
+  const state = data.state ?? data.data?.state;
+
+  if (state === "success") {
+    const resultJsonStr = data.resultJson ?? data.data?.resultJson;
+    const resultObj = (resultJsonStr ? JSON.parse(resultJsonStr) : {}) as { resultUrls?: string[] };
+    const imageUrl = resultObj.resultUrls?.[0] ?? data.resultUrls?.[0];
+
+    if (!imageUrl) {
+      throw new Error("Success state but no image URL provided by Kie");
     }
 
-    const state = data.state ?? data.data?.state;
-    
-    // If the asset is already completed (maybe duplicate webhook), simply return ok
-    if (asset.status === "COMPLETED") {
-       return Response.json({ success: true, message: "Already completed" });
-    }
-    
-    if (state === "success") {
-      // Parse result URLs
-      const resultJsonStr = data.resultJson ?? data.data?.resultJson;
-      const resultObj = (resultJsonStr ? JSON.parse(resultJsonStr) : {}) as { resultUrls?: string[] };
-      const imageUrl = resultObj.resultUrls?.[0] ?? data.resultUrls?.[0]; // Fallbacks just in case
+    console.log(`[Webhook] Success for generation ${generationId}. Uploading to ImageKit...`);
+    const storedUrl = await uploadToImageKit(
+      imageUrl,
+      `gen-${generation.id}.png`,
+      `/projects/${generation.projectId}/generations`
+    );
 
-      if (!imageUrl) {
-        throw new Error("Success state but no image URL provided by Kie");
-      }
+    await db.projectGeneration.update({
+      where: { id: generationId },
+      data: {
+        imageUrl: storedUrl,
+        resultUrl: imageUrl,
+        status: "COMPLETED",
+      },
+    });
+    console.log(`[Webhook] Generation ${generationId} fully completed!`);
 
-      console.log(`[Webhook] Success for asset ${assetId}. Uploading to ImageKit...`);
-      const cleanUrl = await uploadToImageKit(
-        imageUrl,
-        `clean-${asset.id}.png`,
-        "/assets/clean"
-      );
+  } else if (state === "fail" || state === "failed") {
+    const failedReason = data.failedReason ?? data.data?.failedReason ?? "Unknown Kie error";
+    console.error(`[Webhook] Kie processing failed for generation ${generationId}: ${failedReason}`);
 
-      await db.asset.update({
-        where: { id: assetId },
-        data: {
-          cleanUrl,
-          status: "COMPLETED",
-          name: asset.name ?? `Asset ${asset.id.slice(-6)}`,
-        },
-      });
-      console.log(`[Webhook] Asset ${assetId} fully completed!`);
+    await db.projectGeneration.update({
+      where: { id: generationId },
+      data: { status: "FAILED", kieError: failedReason },
+    });
+  } else {
+    console.log(`[Webhook] Received unhandled state for generation ${generationId}: ${state}`);
+  }
+}
 
-    } else if (state === "fail" || state === "failed") {
-      const failedReason = data.failedReason ?? data.data?.failedReason ?? "Unknown Kie error";
-      console.error(`[Webhook] Kie processing failed for asset ${assetId}: ${failedReason}`);
-      
-      await db.asset.update({
-        where: { id: assetId },
-        data: {
-          status: "FAILED",
-          kieError: failedReason,
-        },
-      });
-    } else {
-      console.log(`[Webhook] Received unhandled state for ${assetId}: ${state}`);
-    }
 
     return Response.json({ success: true });
   } catch (error) {
