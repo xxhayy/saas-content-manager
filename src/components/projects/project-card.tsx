@@ -103,7 +103,7 @@ export function ProjectCard({ project, onDeleted, onRenamed }: ProjectCardProps)
               onChange={(e) => setNameValue(e.target.value)}
               onBlur={handleRename}
               onKeyDown={(e) => {
-                if (e.key === "Enter") handleRename();
+                if (e.key === "Enter") void handleRename();
                 if (e.key === "Escape") {
                   setIsRenaming(false);
                   setNameValue(project.name);
