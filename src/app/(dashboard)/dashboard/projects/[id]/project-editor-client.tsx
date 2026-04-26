@@ -476,9 +476,10 @@ export function ProjectEditorClient({
     );
     if (!hasActive) return;
 
-    const interval = setInterval(async () => {
-      const result = await refreshGenerations(project.id);
-      if (result.success) setGenerations(result.generations);
+    const interval = setInterval(() => {
+      void refreshGenerations(project.id).then((result) => {
+        if (result.success) setGenerations(result.generations);
+      });
     }, 5000);
 
     return () => clearInterval(interval);
@@ -677,11 +678,11 @@ export function ProjectEditorClient({
     const clientX =
       "touches" in event
         ? (event.changedTouches[0]?.clientX ?? 0)
-        : (event as MouseEvent).clientX;
+        : event.clientX;
     const clientY =
       "touches" in event
         ? (event.changedTouches[0]?.clientY ?? 0)
-        : (event as MouseEvent).clientY;
+        : event.clientY;
 
     if (isAddHandleDrag) {
       // Existing behaviour — show the node-type dropdown at the drop point

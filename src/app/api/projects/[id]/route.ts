@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { auth } from "@/server/better-auth/config";
 import { headers } from "next/headers";
 import { db } from "@/server/db";
-import { Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 
 type RouteContext = { params: Promise<{ id: string }> };
 

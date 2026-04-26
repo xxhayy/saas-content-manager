@@ -150,7 +150,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
       {/* CONTENT: Navigation Links */}
       <SidebarContent>
-        {navGroups.map((group, index) => (
+        {navGroups.map((group, _index) => (
           <React.Fragment key={group.title}>
             <SidebarGroup>
               <SidebarGroupLabel className="uppercase text-muted-foreground">{group.title}</SidebarGroupLabel>
